@@ -1,5 +1,5 @@
 body {
-    background-color: gray;
+    background-color: grey;
 }
 h1 {
     text-align: center;
@@ -10,4 +10,19 @@ h1 {
 }
 #GameArea {
     background-color: black;
+}
+#pacman {
+    width: 20px;
+}
+#ghost1 {
+    width: 20px;
+}
+#ghost2 {
+    width: 20px;
+}
+#ghost3 {
+    width: 20px;
+}
+#ghost4 {
+    width: 20px;
 }
