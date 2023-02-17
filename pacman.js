@@ -15,31 +15,28 @@ const ghosts = [
 const pacman = document.getElementById('pacman');
 const gameArea = document.getElementById('GameArea');
 
-// ghost1.setAttribute("src", ghostsImg[0]);
-// ghost2.setAttribute("src", ghostsImg[1]);
-// ghost3.setAttribute("src", ghostsImg[2]);
-// ghost4.setAttribute("src", ghostsImg[3]);
 let randomvar = 0;
 function pacManMoves() {
-    if (randomvar < pacmanImg.length) {
-        pacman.setAttribute("src", pacmanImg[randomvar])
+    if (randomvar < images.pacman.length) {
+        pacman.setAttribute("src", images.pacman[randomvar])
         randomvar++;
-    } else if (randomvar === pacmanImg.length) {
-        pacman.setAttribute("src", pacmanImg[1]);
+    } else if (randomvar === images.pacman.length) {
+        pacman.setAttribute("src", images.pacman[1]);
         randomvar -= 3;
     }
 }
 // const pacmanmoves = setInterval(pacManMoves, 1000); //100 is the sweet spot
+
 function ghostMoves () {
     if (randomvar === 0) {
-        ghosts[0].setAttribute("src", redGhostImg[0])
+        ghosts[0].setAttribute("src", images.red[0])
         randomvar++;
     } else if (randomvar === 1) {
-        ghosts[0].setAttribute("src", redGhostImg[1])
+        ghosts[0].setAttribute("src", images.red[1])
         randomvar--;
     }
 }
-const ghostMoveTimer = setInterval(ghostMoves, 300); //100 is the sweet spot
+// const ghostMoveTimer = setInterval(ghostMoves, 300); //100 is the sweet spot
 
 
 class character {
