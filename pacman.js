@@ -2,7 +2,8 @@ const sprites = new Image();
 const gameAreaSetup = document.getElementById('GameArea');
 const game = gameAreaSetup.getContext("2d");
 class Sprite {
-    constructor(row, column, spriteNum, movement, xAxis, yAxis, direction, radius) {
+    constructor(name, row, column, spriteNum, movement, xAxis, yAxis, direction, radius) {
+        this.name = name;
         this.row = row; // this is for sprite location
         this.column = column; //this is for sprite location
         this.spriteNum = spriteNum; //this is how many imgs to cycle between
@@ -14,7 +15,7 @@ class Sprite {
     }
     dim = 32; // dim = dimensions
     hitbox = 15; //hitbox is slightly less than half dim because of blank space around sprites
-    placeholder = 0;
+    directionI = 0;
     // placeholder = this.spriteNum;
     movement() {
         this.animate();
@@ -22,45 +23,42 @@ class Sprite {
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
         if (this.direction === "up") {
             game.clearRect(this.xAxis,this.yAxis+this.movement,32,32)
-            
+            this.directionI = this.column+2;
         }
         else if (this.direction === "down") {
             game.clearRect(this.xAxis,this.yAxis-this.movement,32,32)
+            this.directionI = this.column+6;
         }
         else if (this.direction === "left") {
             game.clearRect(this.xAxis+this.movement,this.yAxis,32,32)
+            this.directionI = this.column+4;
         }
         else if (this.direction === "right") {
             game.clearRect(this.xAxis-this.movement,this.yAxis,32,32)
+            this.directionI = this.column;
         };
         if(this.column < this.column + this.spriteNum) {
-            game.drawImage(sprites, (this.column+this.spriteNum) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            game.drawImage(sprites, (this.column+this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             this.spriteNum--;
             console.log(this.spriteNum)
         } else {
-            game.drawImage(sprites, (this.column+this.spriteNum) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
-            this.spriteNum = 2;
-            console.log(this.spriteNum)
+            if (this.name == "pacman") {
+                game.drawImage(sprites, 0, 0, 32, 32, this.xAxis, this.yAxis, 32, 32)
+                this.spriteNum = 2
+            }
+            else {
+                game.drawImage(sprites, (this.column+this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+                this.spriteNum = 2;
+                console.log(this.spriteNum)
+            }
         } 
         setTimeout(100)
     }
 
 };
-const pacman = new Sprite(0, 0, 2, 8, 200, 200, "up");
+const pacman = new Sprite("pacman", 0, 0, 2, 8, 200, 200, "up");
 let pacmanvar = 0;
 
-function pacmanMoves() {
-    if (pacmanvar < pacman.spriteNum) {
-        game.clearRect(0,0,640,800)
-        game.drawImage(sprites, pacmanvar*32, 0, 32, 32, xAxis, yAxis, 32, 32)
-        pacmanvar++;
-    } else {
-    game.clearRect(0,0,640,800)
-    game.drawImage(sprites, 32, 0, 32, 32, xAxis, yAxis, 32, 32)
-    pacmanvar = 0;
-    }
-    setTimeout(100)
-}
 // let yAxis = gameAreaSetup.height/2; //using gameAreaSetup allows for this to change with arena size
 // let xAxis = gameAreaSetup.width/2; 
 

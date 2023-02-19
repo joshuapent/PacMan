@@ -38,3 +38,16 @@
 //     }
 // }
 // // const ghostMoveTimer = setInterval(ghostMoves, 300); //100 is the sweet spot
+
+// function pacmanMoves() {
+//     if (pacmanvar < pacman.spriteNum) {
+//         game.clearRect(0,0,640,800)
+//         game.drawImage(sprites, pacmanvar*32, 0, 32, 32, xAxis, yAxis, 32, 32)
+//         pacmanvar++;
+//     } else {
+//     game.clearRect(0,0,640,800)
+//     game.drawImage(sprites, 32, 0, 32, 32, xAxis, yAxis, 32, 32)
+//     pacmanvar = 0;
+//     }
+//     setTimeout(100)
+// }
