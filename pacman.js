@@ -18,7 +18,6 @@ const pacmanmoves = setInterval(function () {
         game.clearRect(0,0,640,800)
         game.drawImage(sprites, randomvar*32, 0, 32, 32, 200, 100, 32, 32)
         randomvar++;
-        console.log(randomvar)
     } else {
     game.clearRect(0,0,640,800)
     game.drawImage(sprites, 64, 0, 32, 32, 200, 100, 32, 32)
@@ -27,8 +26,35 @@ const pacmanmoves = setInterval(function () {
 },1000); //100 is the sweet spot
 
 
+
+
 document.addEventListener('keydown', (direction) => {
-    if (direction.keycode == 38) return console.log('up')
+    if (direction.code == 'KeyW' || direction.code == "ArrowUp") {
+        console.log('up')
+    } 
+    else if (direction.code == 'KeyS' || direction.code == "ArrowDown") {
+        console.log('down')
+    } 
+    else if (direction.code == 'KeyA' || direction.code == "ArrowLeft") {
+        console.log('left')
+    } 
+    else if (direction.code == 'KeyD' || direction.code == "ArrowRight") {
+        console.log('right')
+    }
 }
 );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 sprites.src = "images/Pacman.png";
