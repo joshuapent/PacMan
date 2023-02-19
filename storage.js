@@ -38,27 +38,3 @@
 //     }
 // }
 // // const ghostMoveTimer = setInterval(ghostMoves, 300); //100 is the sweet spot
-
-const sprites = new Image();
-const gameAreaSetup = document.getElementById('GameArea');
-const game = gameAreaSetup.getContext("2d");
-
-function flipImage() {
-    game.drawImage(sprites, 200, 200, 32, 32)
-}
-
-function flipImage2() {
-    game.translate(200, 200)
-    game.rotate(-90 * Math.PI/180)
-    game.translate(-200, -200)
-    game.drawImage(sprites, 200-32, 200, 32, 32)
-    }
-
-
-
-
-
-const timeoutstuff = setTimeout(flipImage, 400)
-const timeoutstuff2 = setTimeout(flipImage2, 400)
-
-sprites.src = "images/pacman2.png";
