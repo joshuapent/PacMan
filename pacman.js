@@ -3,15 +3,15 @@ const gameAreaSetup = document.getElementById('GameArea');
 const game = gameAreaSetup.getContext("2d");
 class Sprite {
     constructor(name, row, column, spriteNum, movement, xAxis, yAxis, direction, radius) {
-        this.name = name;
+        this.name = name; //helps for if/else statements
         this.row = row; // this is for sprite location
         this.column = column; //this is for sprite location
         this.spriteNum = spriteNum; //this is how many imgs to cycle between
-        this.movement = movement;
-        this.xAxis = xAxis;
+        this.movement = movement; // speed of movement
+        this.xAxis = xAxis; //marks current location
         this.yAxis = yAxis; 
-        this.radius = radius;
-        this.direction = direction;
+        this.radius = radius; // this is for hitboxes
+        this.direction = direction; //which way are they going
     }
     dim = 32; // dim = dimensions
     hitbox = 15; //hitbox is slightly less than half dim because of blank space around sprites
@@ -23,10 +23,10 @@ class Sprite {
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
         if (this.direction === "up") {
             if (pacman.yAxis > 0) {
-            if (pacman.yAxis <= pacman.movement) pacman.yAxis -= pacman.yAxis;
+            if (pacman.yAxis <= pacman.movement) pacman.yAxis -= pacman.yAxis; //if pacman is close to a wall, this ensures he doesnt walk through it
             else pacman.yAxis -= pacman.movement; 
             game.clearRect(this.xAxis,this.yAxis+this.movement,32,32)
-            this.directionI = this.column+1;
+            this.directionI = this.column+3;
             }
         }
         else if (this.direction === "down") {
@@ -42,7 +42,7 @@ class Sprite {
             if (pacman.xAxis <= pacman.movement) pacman.xAxis -= pacman.xAxis;
             else pacman.xAxis -= pacman.movement; 
             game.clearRect(this.xAxis+this.movement,this.yAxis,32,32)
-            this.directionI = this.column+3;
+            this.directionI = this.column+1;
             }
         }
         else if (this.direction === "right") {
@@ -72,15 +72,10 @@ class Sprite {
     }
 
 };
-const pacman = new Sprite("pacman", 0, 1, 2, 8, 200, 200, "up");
-let pacmanvar = 0;
+const pacman = new Sprite("pacman", 0, 1, 2, 8, 200, 200, "up"); //establishing the onscreen characters 
+const red = new Sprite("red", 1, 0, 1, 8, 200, 200, "up")
 
-// let yAxis = gameAreaSetup.height/2; //using gameAreaSetup allows for this to change with arena size
-// let xAxis = gameAreaSetup.width/2; 
-
-
-
-document.addEventListener('keydown', (direction) => {
+document.addEventListener('keydown', (direction) => { //this function detects arrow pushes for pacman's movement
     pacman.animate();
     if (direction.code == 'KeyW' || direction.code == "ArrowUp") {
             pacman.direction = "up" 
@@ -93,8 +88,11 @@ document.addEventListener('keydown', (direction) => {
         }
     else if (direction.code == 'KeyD' || direction.code == "ArrowRight") {
             pacman.direction = "right"
-        }// gameAreaSetup.width/height allows for this function to be flexible to arena changes
+        }
 });
+
+
+
 
 
 
