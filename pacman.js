@@ -64,7 +64,7 @@ class Sprite {
             }
             else {
                 game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
-                this.spriteNum = 2;
+                this.spriteNum = 1;
                 console.log(this.spriteNum)
             }
         } 
@@ -73,7 +73,7 @@ class Sprite {
 
 };
 const pacman = new Sprite("pacman", 0, 1, 2, 8, 200, 200, "up"); //establishing the onscreen characters 
-const red = new Sprite("red", 1, 0, 1, 8, 200, 200, "up")
+const redGhost = new Sprite("red", 1, 1, 2, 8, 200, 200, "up") //this is all I need for a functioning red ghost
 
 document.addEventListener('keydown', (direction) => { //this function detects arrow pushes for pacman's movement
     pacman.animate();
