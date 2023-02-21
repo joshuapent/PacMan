@@ -1,4 +1,5 @@
 const sprites = new Image();
+const background = new Image();
 const gameAreaSetup = document.getElementById('GameArea');
 const game = gameAreaSetup.getContext("2d");
 class Sprite {
@@ -15,42 +16,39 @@ class Sprite {
     }
     dim = 32; // dim = dimensions
     hitbox = 15; //hitbox is slightly less than half dim because of blank space around sprites
-    directionI = 0;
-    // placeholder = this.spriteNum;
-    movement() {
-        this.animate();
-        }
+    directionI = 0; // placeholder for sprite calling.
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
         if (this.direction === "up") {
+            this.directionI = this.column+3;
             if (pacman.yAxis > 0) {
             if (pacman.yAxis <= pacman.movement) pacman.yAxis -= pacman.yAxis; //if pacman is close to a wall, this ensures he doesnt walk through it
             else pacman.yAxis -= pacman.movement; 
             game.clearRect(this.xAxis,this.yAxis+this.movement,32,32)
-            this.directionI = this.column+3;
+            // this.directionI = this.column+3;
             }
         }
         else if (this.direction === "down") {
+            this.directionI = this.column+5;
             if (pacman.yAxis < gameAreaSetup.height-pacman.dim) {
             if (pacman.yAxis >= gameAreaSetup.height-pacman.movement) pacman.yAxis = gameAreaSetup.height; 
             else pacman.yAxis += pacman.movement; //using .movement allows game speed to be changed easily
             game.clearRect(this.xAxis,this.yAxis-this.movement,32,32)
-            this.directionI = this.column+5;
             }
         }
         else if (this.direction === "left") {
+            this.directionI = this.column+1;
             if (pacman.xAxis > 0) {
             if (pacman.xAxis <= pacman.movement) pacman.xAxis -= pacman.xAxis;
             else pacman.xAxis -= pacman.movement; 
             game.clearRect(this.xAxis+this.movement,this.yAxis,32,32)
-            this.directionI = this.column+1;
             }
         }
         else if (this.direction === "right") {
+            this.directionI = this.column-1;
             if (pacman.xAxis < gameAreaSetup.width-pacman.dim) {    
             if (pacman.xAxis >= gameAreaSetup.width-pacman.movement) pacman.xAxis = gameAreaSetup.width; 
             else pacman.xAxis += pacman.movement;
             game.clearRect(this.xAxis-this.movement,this.yAxis,32,32)
-            this.directionI = this.column-1;
             }
         };
         if(this.column < this.column + this.spriteNum) {
@@ -72,7 +70,7 @@ class Sprite {
     }
 
 };
-const pacman = new Sprite("pacman", 0, 1, 2, 8, 200, 200, "up"); //establishing the onscreen characters 
+const pacman = new Sprite("pacman", 0, 1, 2, 8, 240, 504, "neutral"); //establishing the onscreen characters 
 const redGhost = new Sprite("red", 1, 1, 2, 8, 200, 200, "up") //this is all I need for a functioning red ghost
 
 document.addEventListener('keydown', (direction) => { //this function detects arrow pushes for pacman's movement
@@ -92,9 +90,12 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
 });
 
 
+background.onload = function() {
+    game.drawImage(background, 0, 0)
+    game.drawImage(sprites, 0, 0, 32, 32, pacman.xAxis, pacman.yAxis, 32, 32)
+}
 
 
-
-
+background.src = "images/background.png";
 sprites.src = "images/Pacman.png";
 
