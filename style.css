@@ -11,14 +11,19 @@ h1 {
 #GameArea {
     position: absolute;
     left: 50%;
+    transform: translate(-50%, 0);
     z-index: 1; 
     /* got z-index from stackoverflow, but I do understand it */
 }
 #ghosts {
     position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
     z-index: 2;
 }
 #background {
     position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
     z-index: 0;
 }

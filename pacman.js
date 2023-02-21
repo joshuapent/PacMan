@@ -25,11 +25,6 @@ class Sprite {
     points() {
 
     }
-    // stayOnPath() {
-    //     let path = true; 
-
-    //     if (path === true)
-    // }
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
         if (this.direction === 'up') {
             this.directionI = this.column+3;
@@ -104,6 +99,8 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
             pacman.direction = 'right'
         }
 });
+const boundaries = [];
+
 
 
 gameImg.onload = function() {
