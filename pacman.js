@@ -21,48 +21,79 @@ class Sprite {
     }
     dim = 32; // dim = dimensions
     hitbox = 15; //hitbox is slightly less than half dim because of blank space around sprites
-    directionI = 0; // placeholder for sprite calling.
-    points() {
-
+    directionI = 0; // placeholder for sprite calling.d
+    isBlocked = false; //checks if the user is blocked or not
+    // collision (x1, y1, length, height) {
+    //     if (this.xAxis > x1 && this.xAxis < x1 + length && this.yAxis > y1 && this.yAxis < y1 + height) this.movement = 0;
+    // }
+    obstacleArray = [
+        this.obstacle(40, 40, 64, 48), this.obstacle(40, 120, 64, 80)
+    ]
+    obstacle(x, y, width, height) {
+        if (this.direction == "up" || this.direction == "down") {
+            if (pacman.xAxis > x-32 && pacman.xAxis < x+width && pacman.yAxis >= y-32 && pacman.yAxis <= y+height) return this.isBlocked = true; 
+            else return this.isBlocked = false
+        }
+        else if (this.direction == "left" || this.direction == "right") {
+            if (pacman.xAxis >= x-32 && pacman.xAxis <= x+width && pacman.yAxis > y-32 && pacman.yAxis < y+height) return this.isBlocked = true; 
+            else return this.isBlocked = false
+        }
     }
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
+        this.obstacleArray[0]
         if (this.direction === 'up') {
             this.directionI = this.column+3;
-            if (pacman.yAxis > 0) {
-            if (pacman.yAxis <= pacman.movement) pacman.yAxis -= pacman.yAxis; //if pacman is close to a wall, this ensures he doesnt walk through it
-            else pacman.yAxis -= pacman.movement; 
-            game.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
-            // this.directionI = this.column+3;
+            if (this.isBlocked === true) {
+                this.yAxis += this.movement; 
+                this.yAxis -= this.movement;
+                game.clearRect(this.xAxis,this.yAxis,32,32)
+            }
+            else { 
+                this.yAxis -= this.movement;
+                game.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
             }
         }
         else if (this.direction === 'down') {
             this.directionI = this.column+5;
-            if (pacman.yAxis < gameAreaSetup.height-pacman.dim) {
-            if (pacman.yAxis >= gameAreaSetup.height-pacman.movement) pacman.yAxis = gameAreaSetup.height; 
-            else pacman.yAxis += pacman.movement; //using .movement allows game speed to be changed easily
-            game.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
+            if (this.isBlocked === true) {
+                this.yAxis -= this.movement; 
+                this.yAxis += this.movement; 
+                game.clearRect(this.xAxis,this.yAxis,32,32)
+            }
+            else {
+                this.yAxis += this.movement; //using .movement allows game speed to be changed easily
+                game.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
             }
         }
         else if (this.direction === 'left') {
             this.directionI = this.column+1;
-            if (pacman.xAxis > 0) {
-            if (pacman.xAxis <= pacman.movement) pacman.xAxis -= pacman.xAxis;
-            else pacman.xAxis -= pacman.movement; 
-            game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
+            if (pacman.xAxis <= -32) pacman.xAxis = 528 // this allows for teleporting
+            if (this.isBlocked === true) {
+                this.xAxis -= this.movement; 
+                this.xAxis += this.movement; 
+                game.clearRect(this.xAxis,this.yAxis,32,32)
+            }
+            else {
+                pacman.xAxis -= pacman.movement; 
+                game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
             }
         }
         else if (this.direction === 'right') {
             this.directionI = this.column-1;
-            if (pacman.xAxis < gameAreaSetup.width-pacman.dim) {    
-            if (pacman.xAxis >= gameAreaSetup.width-pacman.movement) pacman.xAxis = gameAreaSetup.width; 
-            else pacman.xAxis += pacman.movement;
-            game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
+            if (pacman.xAxis >= 528) pacman.xAxis = -32 // this allows for teleporting
+            if (this.isBlocked === true) {
+                this.xAxis -= this.movement; 
+                this.xAxis += this.movement; 
+                game.clearRect(this.xAxis,this.yAxis,32,32)
+            }
+            else {
+                pacman.xAxis += pacman.movement;
+                game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
             }
         };
         if(this.column < this.column + this.spriteNum) {
             game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             this.spriteNum--;
-            console.log(this.spriteNum)
         } else {
             if (this.name == 'pacman') {
                 game.drawImage(sprites, 0, 0, 32, 32, this.xAxis, this.yAxis, 32, 32)
@@ -71,13 +102,12 @@ class Sprite {
             else {
                 game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 1;
-                console.log(this.spriteNum)
             }
         } 
         // setTimeout(100)
     }
-
 };
+
 const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
 const redGhost = new Sprite("red", 1, 1, 2, 8, 195, 255, "neutral") //this is all I need for a functioning red ghost
 const pinkGhost = new Sprite("pink", 2, 1, 2, 8, 230, 255, "neutral")
@@ -99,7 +129,6 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
             pacman.direction = 'right'
         }
 });
-const boundaries = [];
 
 
 
@@ -116,4 +145,3 @@ gameImg.onload = function() {
 sprites.src = 'images/Pacman.png';
 backgroundImg.src = 'images/background.png';
 gameImg.src = 'images/points.png';
-
