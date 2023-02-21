@@ -17,13 +17,21 @@ class Sprite {
     dim = 32; // dim = dimensions
     hitbox = 15; //hitbox is slightly less than half dim because of blank space around sprites
     directionI = 0; // placeholder for sprite calling.
+    points() {
+
+    }
+    // stayOnPath() {
+    //     let path = true; 
+
+    //     if (path === true)
+    // }
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
         if (this.direction === "up") {
             this.directionI = this.column+3;
             if (pacman.yAxis > 0) {
             if (pacman.yAxis <= pacman.movement) pacman.yAxis -= pacman.yAxis; //if pacman is close to a wall, this ensures he doesnt walk through it
             else pacman.yAxis -= pacman.movement; 
-            game.clearRect(this.xAxis,this.yAxis+this.movement,32,32)
+            game.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
             // this.directionI = this.column+3;
             }
         }
@@ -32,7 +40,7 @@ class Sprite {
             if (pacman.yAxis < gameAreaSetup.height-pacman.dim) {
             if (pacman.yAxis >= gameAreaSetup.height-pacman.movement) pacman.yAxis = gameAreaSetup.height; 
             else pacman.yAxis += pacman.movement; //using .movement allows game speed to be changed easily
-            game.clearRect(this.xAxis,this.yAxis-this.movement,32,32)
+            game.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
             }
         }
         else if (this.direction === "left") {
@@ -40,7 +48,7 @@ class Sprite {
             if (pacman.xAxis > 0) {
             if (pacman.xAxis <= pacman.movement) pacman.xAxis -= pacman.xAxis;
             else pacman.xAxis -= pacman.movement; 
-            game.clearRect(this.xAxis+this.movement,this.yAxis,32,32)
+            game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
             }
         }
         else if (this.direction === "right") {
@@ -48,7 +56,7 @@ class Sprite {
             if (pacman.xAxis < gameAreaSetup.width-pacman.dim) {    
             if (pacman.xAxis >= gameAreaSetup.width-pacman.movement) pacman.xAxis = gameAreaSetup.width; 
             else pacman.xAxis += pacman.movement;
-            game.clearRect(this.xAxis-this.movement,this.yAxis,32,32)
+            game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
             }
         };
         if(this.column < this.column + this.spriteNum) {
@@ -70,8 +78,11 @@ class Sprite {
     }
 
 };
-const pacman = new Sprite("pacman", 0, 1, 2, 8, 240, 504, "neutral"); //establishing the onscreen characters 
-const redGhost = new Sprite("red", 1, 1, 2, 8, 200, 200, "up") //this is all I need for a functioning red ghost
+const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
+const redGhost = new Sprite("red", 1, 1, 2, 8, 195, 255, "neutral") //this is all I need for a functioning red ghost
+const pinkGhost = new Sprite("pink", 2, 1, 2, 8, 230, 255, "neutral")
+const blueGhost = new Sprite("blue", 3, 1, 2, 8, 265, 255, "neutral")
+const brownGhost = new Sprite("brown", 4, 1, 2, 8, 300, 255, "neutral")
 
 document.addEventListener('keydown', (direction) => { //this function detects arrow pushes for pacman's movement
     pacman.animate();
@@ -93,6 +104,10 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
 background.onload = function() {
     game.drawImage(background, 0, 0)
     game.drawImage(sprites, 0, 0, 32, 32, pacman.xAxis, pacman.yAxis, 32, 32)
+    game.drawImage(sprites, 0, 32, 32, 32, redGhost.xAxis, redGhost.yAxis, 32, 32)
+    game.drawImage(sprites, 0, 64, 32, 32, pinkGhost.xAxis, pinkGhost.yAxis, 32, 32)
+    game.drawImage(sprites, 0, 96, 32, 32, blueGhost.xAxis, blueGhost.yAxis, 32, 32)
+    game.drawImage(sprites, 0, 128, 32, 32, brownGhost.xAxis, brownGhost.yAxis, 32, 32)
 }
 
 
