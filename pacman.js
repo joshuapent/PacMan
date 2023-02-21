@@ -30,17 +30,25 @@ class Sprite {
         this.obstacle(40, 40, 64, 48), this.obstacle(40, 120, 64, 80)
     ]
     obstacle(x, y, width, height) {
-        if (this.direction == "up" || this.direction == "down") {
-            if (pacman.xAxis > x-32 && pacman.xAxis < x+width && pacman.yAxis >= y-32 && pacman.yAxis <= y+height) return this.isBlocked = true; 
+        if (this.direction == "up") {
+            if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis-1 >= y-32 && this.yAxis <= y+height) return this.isBlocked = true; 
             else return this.isBlocked = false
         }
-        else if (this.direction == "left" || this.direction == "right") {
-            if (pacman.xAxis >= x-32 && pacman.xAxis <= x+width && pacman.yAxis > y-32 && pacman.yAxis < y+height) return this.isBlocked = true; 
+        else if (this.direction == "down") {
+            if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis >= y-32 && this.yAxis <= y+height-1) return this.isBlocked = true; 
+            else return this.isBlocked = false
+        }
+        else if (this.direction == "right") {
+            if (this.xAxis >= x-32 && this.xAxis <= x+width-1 && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
+            else return this.isBlocked = false
+        }
+        else if (this.direction == "left") {
+            if (this.xAxis-1 >= x-32 && this.xAxis <= x+width && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
             else return this.isBlocked = false
         }
     }
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
-        this.obstacleArray[0]
+        this.obstacle(248, 456, 32, 64)
         if (this.direction === 'up') {
             this.directionI = this.column+3;
             if (this.isBlocked === true) {
