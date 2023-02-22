@@ -23,32 +23,40 @@ class Sprite {
     hitbox = 15; //hitbox is slightly less than half dim because of blank space around sprites
     directionI = 0; // placeholder for sprite calling.d
     isBlocked = false; //checks if the user is blocked or not
-    // collision (x1, y1, length, height) {
-    //     if (this.xAxis > x1 && this.xAxis < x1 + length && this.yAxis > y1 && this.yAxis < y1 + height) this.movement = 0;
-    // }
     obstacleArray = [
-        this.obstacle(40, 40, 64, 48), this.obstacle(40, 120, 64, 80)
+        [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238],//these are the 6 boundaries
+        [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], 
+        [360, 584, 32, 72], [0, 232, 72, 80], [0, 344, 72, 80], [456, 232, 72, 80], [456, 344, 72, 80], //these are the 10 boundary bulges
+        [40, 568, 64, 48], [40, 40, 64, 48], [424, 40, 64, 48], [424, 568, 64, 48],  //4 corner boxes 
+        [40, 456, 64, 80], [424, 456, 64, 80], [424, 120, 64, 80], [40, 120, 64, 80], //4 next to corner boxes
+        [136, 104, 32, 32], [360, 104, 32, 32], [136, 520, 32, 32], [360, 520, 32, 32], //4 mini boxes
+        [136, 456, 80, 64],  [312, 456, 80, 64], [280, 136, 112, 64], [136, 136, 112, 64], //attached to mini boxes
+        [248, 456, 32, 64], [104, 344, 144, 80], [280, 344, 144, 80], //these are the other 3 bottom boxes
+        [104, 232, 48, 80], [376 ,232, 48, 80], [184, 232, 160, 80]// these are the other 3 top boxes
     ]
     obstacle(x, y, width, height) {
         if (this.direction == "up") {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis-1 >= y-32 && this.yAxis <= y+height) return this.isBlocked = true; 
-            else return this.isBlocked = false
+            // else this.isBlocked = false
         }
         else if (this.direction == "down") {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis >= y-32 && this.yAxis <= y+height-1) return this.isBlocked = true; 
-            else return this.isBlocked = false
+            // else this.isBlocked = false
         }
         else if (this.direction == "right") {
             if (this.xAxis >= x-32 && this.xAxis <= x+width-1 && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
-            else return this.isBlocked = false
+            // else this.isBlocked = false
         }
         else if (this.direction == "left") {
             if (this.xAxis-1 >= x-32 && this.xAxis <= x+width && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
-            else return this.isBlocked = false
+            // else this.isBlocked = false
         }
+        return this.isBlocked = false
     }
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
-        this.obstacle(248, 456, 32, 64)
+        for (let i = 0; i < this.obstacleArray.length; i++) {
+            if (this.obstacle(...this.obstacleArray[i]) === true) break;
+        }
         if (this.direction === 'up') {
             this.directionI = this.column+3;
             if (this.isBlocked === true) {
@@ -111,10 +119,11 @@ class Sprite {
                 game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 1;
             }
-        } 
         // setTimeout(100)
+        }
     }
 };
+
 
 const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
 const redGhost = new Sprite("red", 1, 1, 2, 8, 195, 255, "neutral") //this is all I need for a functioning red ghost
