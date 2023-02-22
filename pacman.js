@@ -25,8 +25,7 @@ class Sprite {
     isBlocked = false; //checks if the user is blocked or not
     obstacleArray = [
         [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238],//these are the 6 boundaries
-        [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], 
-        [360, 584, 32, 72], [0, 232, 72, 80], [0, 344, 72, 80], [456, 232, 72, 80], [456, 344, 72, 80], //these are the 10 boundary bulges
+        [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], [360, 584, 32, 72], [0, 232, 72, 80], [0, 344, 72, 80], [456, 232, 72, 80], [456, 344, 72, 80], //these are the 10 boundary bulges
         [40, 568, 64, 48], [40, 40, 64, 48], [424, 40, 64, 48], [424, 568, 64, 48],  //4 corner boxes 
         [40, 456, 64, 80], [424, 456, 64, 80], [424, 120, 64, 80], [40, 120, 64, 80], //4 next to corner boxes
         [136, 104, 32, 32], [360, 104, 32, 32], [136, 520, 32, 32], [360, 520, 32, 32], //4 mini boxes
@@ -37,19 +36,15 @@ class Sprite {
     obstacle(x, y, width, height) {
         if (this.direction == "up") {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis-1 >= y-32 && this.yAxis <= y+height) return this.isBlocked = true; 
-            // else this.isBlocked = false
         }
         else if (this.direction == "down") {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis >= y-32 && this.yAxis <= y+height-1) return this.isBlocked = true; 
-            // else this.isBlocked = false
         }
         else if (this.direction == "right") {
             if (this.xAxis >= x-32 && this.xAxis <= x+width-1 && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
-            // else this.isBlocked = false
         }
         else if (this.direction == "left") {
             if (this.xAxis-1 >= x-32 && this.xAxis <= x+width && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
-            // else this.isBlocked = false
         }
         return this.isBlocked = false
     }
@@ -62,19 +57,19 @@ class Sprite {
             if (this.isBlocked === true) {
                 this.yAxis += this.movement; 
                 this.yAxis -= this.movement;
-                game.clearRect(this.xAxis,this.yAxis,32,32)
+                game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
             }
             else { 
                 this.yAxis -= this.movement;
                 game.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
             }
         }
-        else if (this.direction === 'down') {
+        if (this.direction === 'down') {
             this.directionI = this.column+5;
             if (this.isBlocked === true) {
                 this.yAxis -= this.movement; 
                 this.yAxis += this.movement; 
-                game.clearRect(this.xAxis,this.yAxis,32,32)
+                game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
             }
             else {
                 this.yAxis += this.movement; //using .movement allows game speed to be changed easily
@@ -87,10 +82,10 @@ class Sprite {
             if (this.isBlocked === true) {
                 this.xAxis -= this.movement; 
                 this.xAxis += this.movement; 
-                game.clearRect(this.xAxis,this.yAxis,32,32)
+                game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
             }
             else {
-                pacman.xAxis -= pacman.movement; 
+                this.xAxis -= this.movement; 
                 game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
             }
         }
@@ -100,10 +95,10 @@ class Sprite {
             if (this.isBlocked === true) {
                 this.xAxis -= this.movement; 
                 this.xAxis += this.movement; 
-                game.clearRect(this.xAxis,this.yAxis,32,32)
+                game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
             }
             else {
-                pacman.xAxis += pacman.movement;
+                this.xAxis += this.movement;
                 game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
             }
         };
@@ -119,12 +114,12 @@ class Sprite {
                 game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 1;
             }
-        // setTimeout(100)
-        }
+        } setTimeout(() => {
+ 
+            this.animate();
+        }, 75);
     }
 };
-
-
 const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
 const redGhost = new Sprite("red", 1, 1, 2, 8, 195, 255, "neutral") //this is all I need for a functioning red ghost
 const pinkGhost = new Sprite("pink", 2, 1, 2, 8, 230, 255, "neutral")
@@ -132,7 +127,6 @@ const blueGhost = new Sprite("blue", 3, 1, 2, 8, 265, 255, "neutral")
 const brownGhost = new Sprite("brown", 4, 1, 2, 8, 300, 255, "neutral")
 
 document.addEventListener('keydown', (direction) => { //this function detects arrow pushes for pacman's movement
-    pacman.animate();
     if (direction.code == 'KeyW' || direction.code == 'ArrowUp') {
             pacman.direction = 'up'
             }
@@ -149,6 +143,9 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
 
 
 
+
+
+
 gameImg.onload = function() {
     game.drawImage(sprites, 0, 0, 32, 32, pacman.xAxis, pacman.yAxis, 32, 32)
     ghostZone.drawImage(sprites, 0, 32, 32, 32, redGhost.xAxis, redGhost.yAxis, 32, 32)
@@ -157,6 +154,7 @@ gameImg.onload = function() {
     ghostZone.drawImage(sprites, 0, 128, 32, 32, brownGhost.xAxis, brownGhost.yAxis, 32, 32)
     background.drawImage(backgroundImg, 0, 0)
     game.drawImage(gameImg, 0, 0)
+    pacman.animate();
 }
 
 sprites.src = 'images/Pacman.png';
