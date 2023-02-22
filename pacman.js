@@ -1,12 +1,18 @@
 const sprites = new Image();
 const gameImg = new Image();
 const backgroundImg = new Image();
+const countdownImg1 = new Image();
+const countdownImg2 = new Image();
+const countdownImg3 = new Image();
+const startImg = new Image();
 const gameAreaSetup = document.getElementById('GameArea');
 const game = gameAreaSetup.getContext('2d');
 const ghostSetup = document.getElementById('ghosts');
 const ghostZone = ghostSetup.getContext('2d');
 const backgroundSetup = document.getElementById('background');
-const background = backgroundSetup.getContext('2d')
+const background = backgroundSetup.getContext('2d');
+const countdownSetup = document.getElementById('start');
+const countdown = countdownSetup.getContext('2d');
 class Sprite {
     constructor(name, row, column, spriteNum, movement, xAxis, yAxis, direction, radius) {
         this.name = name; //helps for if/else statements
@@ -142,8 +148,8 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
             pacman.direction = 'right'
         }
 });
-
-
+function death() {
+}
 
 
 
@@ -157,11 +163,31 @@ gameImg.onload = function() {
         ghostZone.drawImage(sprites, 0, 32, 32, 32, redGhost.xAxis, redGhost.yAxis, 32, 32)
         ghostZone.drawImage(sprites, 0, 64, 32, 32, pinkGhost.xAxis, pinkGhost.yAxis, 32, 32)
         ghostZone.drawImage(sprites, 0, 96, 32, 32, blueGhost.xAxis, blueGhost.yAxis, 32, 32)
-        ghostZone.drawImage(sprites, 0, 128, 32, 32, brownGhost.xAxis, brownGhost.yAxis, 32, 32) 
-        pacman.animate();   
+        ghostZone.drawImage(sprites, 0, 128, 32, 32, brownGhost.xAxis, brownGhost.yAxis, 32, 32)  
+        countdown.drawImage(countdownImg3, 0, 0)
     }, 1000);
+    setTimeout(() => {
+        countdown.clearRect(0,0,800, 800)
+        countdown.drawImage(countdownImg2, 0, 0)
+    }, 2000);
+    setTimeout(() => {
+        countdown.clearRect(0,0,800, 800)
+        countdown.drawImage(countdownImg1, 0, 0)
+    }, 3000);
+    setTimeout(() => {
+        countdown.clearRect(0,0,800, 800)
+        countdown.drawImage(startImg, 0, 0)
+    }, 4000);
+    setTimeout(() => {
+        countdown.clearRect(0,0,800, 800)
+        pacman.animate();  
+    }, 5000);
 }
 
+countdownImg1.src = 'images/countdown1.png'
+countdownImg2.src = 'images/countdown2.png'
+countdownImg3.src = 'images/countdown3.png'
+startImg.src = 'images/start.png'
 sprites.src = 'images/Pacman.png';
 backgroundImg.src = 'images/background.png';
 gameImg.src = 'images/points.png';
