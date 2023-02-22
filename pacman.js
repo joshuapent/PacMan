@@ -55,8 +55,8 @@ class Sprite {
         if (this.direction === 'up') {
             this.directionI = this.column+3;
             if (this.isBlocked === true) {
-                this.yAxis += this.movement; 
-                this.yAxis -= this.movement;
+                // this.yAxis += this.movement; 
+                // this.yAxis -= this.movement;
                 game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
             }
             else { 
@@ -67,8 +67,8 @@ class Sprite {
         if (this.direction === 'down') {
             this.directionI = this.column+5;
             if (this.isBlocked === true) {
-                this.yAxis -= this.movement; 
-                this.yAxis += this.movement; 
+                // this.yAxis -= this.movement; 
+                // this.yAxis += this.movement; 
                 game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
             }
             else {
@@ -80,8 +80,8 @@ class Sprite {
             this.directionI = this.column+1;
             if (pacman.xAxis <= -32) pacman.xAxis = 528 // this allows for teleporting
             if (this.isBlocked === true) {
-                this.xAxis -= this.movement; 
-                this.xAxis += this.movement; 
+                // this.xAxis -= this.movement; 
+                // this.xAxis += this.movement; 
                 game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
             }
             else {
@@ -93,8 +93,8 @@ class Sprite {
             this.directionI = this.column-1;
             if (pacman.xAxis >= 528) pacman.xAxis = -32 // this allows for teleporting
             if (this.isBlocked === true) {
-                this.xAxis -= this.movement; 
-                this.xAxis += this.movement; 
+                // this.xAxis -= this.movement; 
+                // this.xAxis += this.movement; 
                 game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
             }
             else {
@@ -102,10 +102,10 @@ class Sprite {
                 game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
             }
         };
-        if(this.column < this.column + this.spriteNum) {
+        if(this.column < this.column + this.spriteNum && this.isBlocked == false) {
             game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             this.spriteNum--;
-        } else {
+        } else if (this.isBlocked == false) {
             if (this.name == 'pacman') {
                 game.drawImage(sprites, 0, 0, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 2
@@ -114,10 +114,12 @@ class Sprite {
                 game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 1;
             }
+        } else if (this.isBlocked == true) {
+                game.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
         } setTimeout(() => {
  
             this.animate();
-        }, 75);
+        }, 50);
     }
 };
 const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
@@ -147,14 +149,17 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
 
 
 gameImg.onload = function() {
-    game.drawImage(sprites, 0, 0, 32, 32, pacman.xAxis, pacman.yAxis, 32, 32)
-    ghostZone.drawImage(sprites, 0, 32, 32, 32, redGhost.xAxis, redGhost.yAxis, 32, 32)
-    ghostZone.drawImage(sprites, 0, 64, 32, 32, pinkGhost.xAxis, pinkGhost.yAxis, 32, 32)
-    ghostZone.drawImage(sprites, 0, 96, 32, 32, blueGhost.xAxis, blueGhost.yAxis, 32, 32)
-    ghostZone.drawImage(sprites, 0, 128, 32, 32, brownGhost.xAxis, brownGhost.yAxis, 32, 32)
     background.drawImage(backgroundImg, 0, 0)
     game.drawImage(gameImg, 0, 0)
-    pacman.animate();
+
+    setTimeout(() => {
+        game.drawImage(sprites, 0, 0, 32, 32, pacman.xAxis, pacman.yAxis, 32, 32)
+        ghostZone.drawImage(sprites, 0, 32, 32, 32, redGhost.xAxis, redGhost.yAxis, 32, 32)
+        ghostZone.drawImage(sprites, 0, 64, 32, 32, pinkGhost.xAxis, pinkGhost.yAxis, 32, 32)
+        ghostZone.drawImage(sprites, 0, 96, 32, 32, blueGhost.xAxis, blueGhost.yAxis, 32, 32)
+        ghostZone.drawImage(sprites, 0, 128, 32, 32, brownGhost.xAxis, brownGhost.yAxis, 32, 32) 
+        pacman.animate();   
+    }, 1000);
 }
 
 sprites.src = 'images/Pacman.png';
