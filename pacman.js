@@ -74,7 +74,7 @@ class Sprite {
         }
         return this.isDetected = false
     }
-    animate() { //makes the sprite animated, ex: Pacman moves his mouth.
+    pacmanConnect() { //makes the sprite animated, ex: Pacman moves his mouth.
         if (this.momentum === null) this.momentum = this.direction
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.obstacle(...this.obstacleArray[i]) === true) break;
@@ -84,7 +84,13 @@ class Sprite {
         }
         this.placeholder = this.momentum;
         this.momentum = this.direction
-        if (this.isDetected === true) this.momentum = this.placeholder
+        if (this.isDetected === true) this.momentum = this.placeholder;
+        this.move();
+        setTimeout(() => {
+            this.pacmanConnect();
+        }, 60);
+    }
+    move() {
         if (this.momentum === 'up') {
             if (this.isBlocked == false) {
             this.directionI = this.column+3;
@@ -103,19 +109,22 @@ class Sprite {
         else if (this.momentum === 'left') {
             if (this.isBlocked === false) {
             this.directionI = this.column+1;
+            this.xAxis -= this.movement; 
             if (pacman.xAxis <= -32) pacman.xAxis = 528 // this allows for teleporting
-                this.xAxis -= this.movement; 
-                game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
+            game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
             }
         }
         else if (this.momentum === 'right') {
             if (this.isBlocked === false) {
             this.directionI = this.column-1;
+            this.xAxis += this.movement;
             if (pacman.xAxis >= 528) pacman.xAxis = -32 // this allows for teleporting
-                this.xAxis += this.movement;
-                game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
+            game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
             }
         };
+        this.animate();
+    }
+    animate() {
         if(this.column < this.column + this.spriteNum && this.isBlocked == false) {
             game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             this.spriteNum--;
@@ -131,13 +140,27 @@ class Sprite {
         } else if (this.isBlocked == true) {
                 game.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
         } 
-    setTimeout(() => {
+    }
+    ghostChoice() {
+        let decision = Math.floor(Math.random() * 12)
+        if (decision < 3) this.direction = 'up'
+        if (decision < 6) this.direction === 'right'
+        else if (decision < 9) this.direction === 'left'
+        else if (decision < 12) this.direction === 'down'
+    }
+    ghostAI() {
+        for (let i = 0; i < this.obstacleArray.length; i++) {
+            if (this.obstacle(...this.obstacleArray[i]) === true) break;
+        }
         this.animate();
-    }, 60);
-}
+        if (this.isBlocked === true) this.ghostChoice()
+        setTimeout(() => {
+            this.ghostAI();
+        }, 60)
+        }
 };
 const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
-const redGhost = new Sprite("red", 1, 1, 2, 8, 195, 255, "neutral") //this is all I need for a functioning red ghost
+const redGhost = new Sprite("red", 1, 1, 2, 8, 248, 200, "neutral") //this is all I need for a functioning red ghost
 const pinkGhost = new Sprite("pink", 2, 1, 2, 8, 230, 255, "neutral")
 const blueGhost = new Sprite("blue", 3, 1, 2, 8, 265, 255, "neutral")
 const brownGhost = new Sprite("brown", 4, 1, 2, 8, 300, 255, "neutral")
@@ -187,7 +210,8 @@ gameImg.onload = function() {
     }, 4000);
     setTimeout(() => {
         countdown.clearRect(0,0,800, 800)
-        pacman.animate();
+        pacman.pacmanConnect();
+        redGhost.ghostAI();
     }, 5000);
 }
 

@@ -95,3 +95,11 @@
 //         game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
 //     // }
 // };
+
+let decision = Math.floor(Math.random() * 12)
+            if (decision < 3) this.direction = 'up'
+            if (decision < 6) this.direction === 'right'
+            else if (decision < 9) this.direction === 'left'
+            else if (decision < 12) this.direction === 'down'
+
+console.log(decision)
