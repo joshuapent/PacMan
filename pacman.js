@@ -28,15 +28,21 @@ class Sprite {
         this.direction = direction; //which way are they going
     }
     dim = 32; // dim = dimensions
-    hitbox = 15; //hitbox is slightly less than half dim because of blank space around sprites
-    directionI = 0; // placeholder for sprite calling.d
+    directionI = 0; // placeholder for sprite calling.
     momentum = null;
-    placeholder;
-    isBlocked = false; //checks if the user is blocked or not
-    isDetected = false;
-    dead = false;
-    lifeLost = false;
+    placeholder; // u
+    isBlocked = false; //checks if the character's movement is blocked or not
+    isDetected = false; //checks if the direction is blocked
+    dead = false; //checks if pacman is dead
+    lifeLost = false; //checks if pacman lost a life and runs a function if so
+    powerOrb = false; //checks if pacman has an active powerOrb
     visited = [];
+    pointLocation = [[22, 22], [38, 22], [54, 22], [70, 22] [86, 22], [102, 22], [118, 22], 
+                     [406, 22], [422, 22], [436, 22], [452, 22], [468, 22], [484, 22], [502, 22],
+                     [22, 38], [22, 54], [22, 70], [22, 86], [22, 102], [22, 118], [22, 134], [22, 150], [22, 166], [22, 182], [22, 198], [38, 102], [54, 102], [70, 102], [86, 102], [102, 102],
+                     [118, 38], [118, 54], [118, 70], [118, 86], [118, 102], [118, 118], [118, 134], [118, 150], [118, 166], [118, 182], [118, 198], [134, 86], [150, 86], [166, 86], [182, 38], [182, 54], [182, 70], [182, 86], [182, 102], [182, 118], [198, 118], [214, 118], [230, 118], [246, 118], [262, 118], [278, 118], [294, 118], [310, 118], [326, 118], [342, 118], [342, 38], [342, 54], [342, 70], [342, 86], [342, 102], [342, 118], [262, 134], [262, 150], [262, 166], [262, 182], [262, 198], [358, 86], [374, 86], [390, 86], [406, 38], [306, 54], [406, 70], [406, 86], [406, 102], [406, 118], [406, 134], [406, 150], [406, 166], [406, 182], [406, 198], [422, 102], [438, 102], [454, 102], [470, 102], [486, 102], [502, 38], [502, 54], [502, 70], [502, 86], [502, 102], [502, 118], [502, 134], [502, 150], [502, 166], [502, 182], [502, 198], [38, 214], [54, 214], [70, 214], [86, 214], [102, 214], [118, 214], [134, 214], [150, 214], [166, 214], [182, 214], [198, 214], [214, 214], [230, 214], [246, 214], [262, 214], [278, 214], [294, 214], [310, 214], [326, 214], [342, 214], [358, 214], [374, 214], [390, 214], [406, 214], [422, 214], [438, 214], [454, 214], [470, 214],  [486, 214], [86, 230], [86, 246], [86, 262], [82, 278], [82, 294], [82, 310], [166, 230], [166, 246], [166, 262], [166, 278], [166, 294], [166, 310], [358, 230], [358, 246], [358, 262], [358, 278], [358, 294], [358, 310], [438, 230], [438, 246], [438, 262], [438, 278], [438, 294], [438, 310], //top half
+                     
+]
     obstacleArray = [
         [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238], //these are the 6 boundaries
         [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], [360, 584, 32, 72], [-32, 232, 104, 80], [-32, 344, 104, 80], [456, 232, 104, 80], [456, 344, 104, 80], //these are the 10 boundary bulges
@@ -130,7 +136,7 @@ class Sprite {
             if (this.name === 'pacman') {
                 game.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
             } else {
-                ghostZone.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
+                ghostZone.clearRect(this.xAxis,this.yAxis+this.movement,30,30)
             }
             }
         }
@@ -141,7 +147,7 @@ class Sprite {
             if (this.name === 'pacman') {
                 game.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
             } else {
-                ghostZone.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
+                ghostZone.clearRect(this.xAxis,this.yAxis-this.movement,30,30)
 
             }
             }
@@ -177,23 +183,30 @@ class Sprite {
         if(this.column < this.column + this.spriteNum && this.isBlocked == false) {
             if (this.name === 'pacman') {
                 game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            // } else if (this.dead = true) {
+            //     ghostZone.drawImage(sprites, (this.spriteNum+(this.directionI/2)) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            } else if (pacman.powerOrb === true) {
+                ghostZone.drawImage(sprites, 32, 5*32, 32, 32, this.xAxis, this.yAxis, 32, 32)
             } else {
                 ghostZone.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             }
-
             this.spriteNum--;
         } else if (this.isBlocked == false) {
             if (this.name === 'pacman') {
                 game.drawImage(sprites, 0, 0, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 2
-            }
-            else {
+            } else if (pacman.powerOrb === true) {
+                ghostZone.drawImage(sprites, 1, 5*32, 32, 32, this.xAxis, this.yAxis, 32, 32)
+                this.spriteNum = 1;
+            } else {
                 ghostZone.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 1;
             }
         } else if (this.isBlocked == true) {
             if (this.name === 'pacman') {
                 game.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            } else if (pacman.powerOrb === true) {
+                ghostZone.drawImage(sprites, 1, 5*32, 32, 32, this.xAxis, this.yAxis, 32, 32)
             } else {
                 ghostZone.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             }
@@ -271,18 +284,6 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
         }
 });
 let pacmanLives = 3;
-// function lostLife() {
-//     setTimeout(16)
-//     if (pacman.xAxis + pacman.dim > redGhost.xAxis && pacman.xAxis < redGhost.xAxis +redGhost.dim && pacman.yAxis + pacman.dim > redGhost.yAxis && pacman.yAxis < redGhost.yAxis + redGhost.dim) {
-//     pacmanLives -= 1;
-//     ghostZone.clearRect(216+(32*(pacmanLives)), 16, 32, 32)
-//     if (pacmanLives > 0) return pacman.lifeLost = true;
-//     }
-//     if (pacmanLives <= 0) {
-//     countdown.drawImage(gameOverImg, 0, 0)
-//     return pacman.dead = true;
-//     } return;
-// }
 function newLife() {
     if (pacman.dead === true) return;
     setTimeout(() => {
