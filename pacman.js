@@ -28,7 +28,10 @@ class Sprite {
     dim = 32; // dim = dimensions
     hitbox = 15; //hitbox is slightly less than half dim because of blank space around sprites
     directionI = 0; // placeholder for sprite calling.d
+    momentum = null;
+    placeholder;
     isBlocked = false; //checks if the user is blocked or not
+    isDetected = false;
     obstacleArray = [
         [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238],//these are the 6 boundaries
         [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], [360, 584, 32, 72], [0, 232, 72, 80], [0, 344, 72, 80], [456, 232, 72, 80], [456, 344, 72, 80], //these are the 10 boundary bulges
@@ -40,70 +43,75 @@ class Sprite {
         [104, 232, 48, 80], [376 ,232, 48, 80], [184, 232, 160, 80]// these are the other 3 top boxes
     ]
     obstacle(x, y, width, height) {
-        if (this.direction == "up") {
+        if (this.momentum == "up") {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis-1 >= y-32 && this.yAxis <= y+height) return this.isBlocked = true; 
         }
-        else if (this.direction == "down") {
+        else if (this.momentum == "down") {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis >= y-32 && this.yAxis <= y+height-1) return this.isBlocked = true; 
         }
-        else if (this.direction == "right") {
+        else if (this.momentum == "right") {
             if (this.xAxis >= x-32 && this.xAxis <= x+width-1 && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
         }
-        else if (this.direction == "left") {
+        else if (this.momentum == "left") {
             if (this.xAxis-1 >= x-32 && this.xAxis <= x+width && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
         }
         return this.isBlocked = false
+    }
+    detection(x, y, width, height) {
+        if (this.direction == "up") {
+            if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis-1 >= y-32 && this.yAxis <= y+height) 
+            return this.isDetected = true;
+        }
+        else if (this.direction == "down") {
+            if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis >= y-32 && this.yAxis <= y+height-1) 
+            return this.isDetected = true; 
+        }
+        else if (this.direction == "right") {
+            if (this.xAxis >= x-32 && this.xAxis <= x+width-1 && this.yAxis > y-32 && this.yAxis < y+height)  return this.isDetected = true; 
+        }
+        else if (this.direction == "left") {
+            if (this.xAxis-1 >= x-32 && this.xAxis <= x+width && this.yAxis > y-32 && this.yAxis < y+height) return this.isDetected = true; 
+        }
+        return this.isDetected = false
     }
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.obstacle(...this.obstacleArray[i]) === true) break;
         }
-        if (this.direction === 'up') {
+        for (let i = 0; i < this.obstacleArray.length; i++) {
+            if (this.detection(...this.obstacleArray[i]) === true) break;
+        }
+        if (this.momentum === null) this.momentum = this.direction
+        this.placeholder = this.momentum;
+        this.momentum = this.direction
+        if (this.isDetected === true) this.momentum = this.placeholder
+        if (this.momentum === 'up') {
+            if (this.isBlocked == false) {
             this.directionI = this.column+3;
-            if (this.isBlocked === true) {
-                // this.yAxis += this.movement; 
-                // this.yAxis -= this.movement;
-                game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
-            }
-            else { 
                 this.yAxis -= this.movement;
                 game.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
-            }
-        }
-        if (this.direction === 'down') {
-            this.directionI = this.column+5;
-            if (this.isBlocked === true) {
-                // this.yAxis -= this.movement; 
-                // this.yAxis += this.movement; 
                 game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
             }
-            else {
+        }
+        if (this.momentum === 'down') {
+            if (this.isBlocked === false) {
+            this.directionI = this.column+5;
                 this.yAxis += this.movement; //using .movement allows game speed to be changed easily
                 game.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
             }
         }
-        else if (this.direction === 'left') {
+        else if (this.momentum === 'left') {
+            if (this.isBlocked === false) {
             this.directionI = this.column+1;
             if (pacman.xAxis <= -32) pacman.xAxis = 528 // this allows for teleporting
-            if (this.isBlocked === true) {
-                // this.xAxis -= this.movement; 
-                // this.xAxis += this.movement; 
-                game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
-            }
-            else {
                 this.xAxis -= this.movement; 
                 game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
             }
         }
-        else if (this.direction === 'right') {
+        else if (this.momentum === 'right') {
+            if (this.isBlocked === false) {
             this.directionI = this.column-1;
             if (pacman.xAxis >= 528) pacman.xAxis = -32 // this allows for teleporting
-            if (this.isBlocked === true) {
-                // this.xAxis -= this.movement; 
-                // this.xAxis += this.movement; 
-                game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
-            }
-            else {
                 this.xAxis += this.movement;
                 game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
             }

@@ -50,4 +50,48 @@
 //     pacmanvar = 0;
 //     }
 //     setTimeout(100)
+// // }
+
+// if (this.momentum === 'up') {
+//     this.directionI = this.column+3;
+//     // if (this.isBlocked === true) {
+//     //     game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
+//     // }
+//     // else  { 
+//         this.yAxis -= this.movement;
+//         game.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
+//         game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
+//     // }
 // }
+// if (this.momentum === 'down') {
+//     this.directionI = this.column+5;
+//     // if (this.isBlocked === true) {
+//     //     game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
+//     // }
+//     // else {
+//         this.yAxis += this.movement; //using .movement allows game speed to be changed easily
+//         game.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
+//     // }
+// }
+// else if (this.momentum === 'left') {
+//     this.directionI = this.column+1;
+//     if (pacman.xAxis <= -32) pacman.xAxis = 528 // this allows for teleporting
+//     // if (this.isBlocked === true) {
+//     //     game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
+//     // }
+//     // else {
+//         this.xAxis -= this.movement; 
+//         game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
+//     // }
+// }
+// else if (this.momentum === 'right') {
+//     this.directionI = this.column-1;
+//     if (pacman.xAxis >= 528) pacman.xAxis = -32 // this allows for teleporting
+//     // if (this.isBlocked === true) {
+//     //     game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
+//     // }
+//     // else {
+//         this.xAxis += this.movement;
+//         game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
+//     // }
+// };
