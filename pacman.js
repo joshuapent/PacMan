@@ -38,7 +38,7 @@ class Sprite {
     dead = false;
     lifeLost = false;
     obstacleArray = [
-        [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238],//these are the 6 boundaries
+        [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238], //these are the 6 boundaries
         [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], [360, 584, 32, 72], [-32, 232, 104, 80], [-32, 344, 104, 80], [456, 232, 104, 80], [456, 344, 104, 80], //these are the 10 boundary bulges
         [40, 568, 64, 48], [40, 40, 64, 48], [424, 40, 64, 48], [424, 568, 64, 48],  //4 corner boxes 
         [40, 456, 64, 80], [424, 456, 64, 80], [424, 120, 64, 80], [40, 120, 64, 80], //4 next to corner boxes
@@ -46,6 +46,19 @@ class Sprite {
         [136, 456, 80, 64],  [312, 456, 80, 64], [280, 136, 112, 64], [136, 136, 112, 64], //attached to mini boxes
         [248, 456, 32, 64], [104, 344, 144, 80], [280, 344, 144, 80], //these are the other 3 bottom boxes
         [104, 232, 48, 80], [376 ,232, 48, 80], [184, 232, 160, 80]// these are the other 3 top boxes
+    ]
+    ghostObstacle = [
+        [561, 0, 561, 600], [-33, 0, -33, 600], //two new boundaries
+        [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238], //these are the 6 boundaries
+        [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], [360, 584, 32, 72], [-32, 232, 104, 192], [456, 232, 104, 192], //these are the 8 boundary bulges
+        [40, 568, 64, 48], [40, 40, 64, 48], [424, 40, 64, 48], [424, 568, 64, 48],  //4 corner boxes 
+        [40, 456, 64, 80], [424, 456, 64, 80], [424, 120, 64, 80], [40, 120, 64, 80], //4 next to corner boxes
+        [136, 104, 32, 32], [360, 104, 32, 32], [136, 520, 32, 32], [360, 520, 32, 32], //4 mini boxes
+        [136, 456, 80, 64],  [312, 456, 80, 64], [280, 136, 112, 64], [136, 136, 112, 64], //attached to mini boxes
+        [248, 456, 32, 64], [104, 344, 144, 80], [280, 344, 144, 80], //these are the other 3 bottom boxes
+        [104, 232, 48, 80], [376 ,232, 48, 80], [184, 232, 160, 80],// these are the other 3 top boxes
+        [184, 232, 64, 2], [280, 232, 64, 2], [184, 232, 32, 80], [312, 232, 64, 32], [184, 310, 160, 2],//ghost box
+        [248, 232, 32, 2]//ghost box special case
     ]
     obstacle(x, y, width, height) {
         if (this.momentum == "up") {
@@ -79,17 +92,13 @@ class Sprite {
         }
         return this.isDetected = false
     }
-    pacmanConnect() { //makes the sprite animated, ex: Pacman moves his mouth.
-        if (this.momentum === null) this.momentum = this.direction
+    pacmanConnect() { 
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.obstacle(...this.obstacleArray[i]) === true) break;
         }
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.detection(...this.obstacleArray[i]) === true) break;
         }
-        this.placeholder = this.momentum;
-        this.momentum = this.direction
-        if (this.isDetected === true) this.momentum = this.placeholder;
         this.move();
         lostLife();
         if (pacman.dead === true) return;
@@ -99,6 +108,10 @@ class Sprite {
         }, 60);
     }
     move() {
+        if (this.momentum === null) this.momentum = this.direction
+        this.placeholder = this.momentum;
+        this.momentum = this.direction
+        if (this.isDetected === true) this.momentum = this.placeholder;
         if (this.momentum === 'up') {
             if (this.isBlocked == false) {
             this.directionI = this.column+3;
@@ -176,30 +189,36 @@ class Sprite {
         } 
     }
     ghostChoice() {
+        this.placeholder = this.direction;
         let headsOrTails = Math.floor(Math.random() * 2)
         let lookAround = Math.floor(Math.random() * 12)
         let decision = Math.floor(Math.random() * 12)
-        if (decision <= 2) return this.momentum = 'up'
-        else if (decision <= 5) return this.momentum = 'right'
-        else if (decision <= 8) return this.momentum = 'left'
-        else if (decision <= 11) return this.momentum = 'down'
-        if (lookAround <= 2) return this.direction = 'up'
-        else if (lookAround <= 5) return this.direction = 'right'
-        else if (lookAround <= 8) return this.direction = 'left'
-        else if (lookAround <= 11) return this.direction = 'down'
+        if (this.isBlocked === true) {
+            if (decision <= 2) return this.momentum = 'up'
+            else if (decision <= 5) return this.momentum = 'right'
+            else if (decision <= 8) return this.momentum = 'left'
+            else if (decision <= 11) return this.momentum = 'down'
+        }
+        if (this.isDetected === false && this.isBlocked === false) {
+            if (lookAround <= 2) return this.direction = 'up'
+            else if (lookAround <= 5) return this.direction = 'right'
+            else if (lookAround <= 8) return this.direction = 'left'
+            else if (lookAround <= 11) return this.direction = 'down'
+        }
+        
     }
     ghostAI() {
         if (this.momentum === null) this.ghostChoice();
         for (let i = 0; i < this.obstacleArray.length; i++) {
-            if (this.obstacle(...this.obstacleArray[i]) === true) break;
+            if (this.obstacle(...this.ghostObstacle[i]) === true) break;
         }
         for (let i = 0; i < this.obstacleArray.length; i++) {
-            if (this.detection(...this.obstacleArray[i]) === true) break;
+            if (this.detection(...this.ghostObstacle[i]) === true) break;
         }
         // if (this.isDetected === false) this.ghostChoice();
-        if (this.isBlocked === true) this.ghostChoice();
         this.move(); 
-        
+        this.ghostChoice();
+
         lostLife();
         if (pacman.dead === true) return;
         if (pacman.lifeLost === true) return;
