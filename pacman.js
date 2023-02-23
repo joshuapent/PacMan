@@ -61,33 +61,33 @@ class Sprite {
         [248, 232, 32, 2]//ghost box special case
     ]
     obstacle(x, y, width, height) {
-        if (this.momentum == "up") {
+        if (this.momentum == 'up') {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis-1 >= y-32 && this.yAxis <= y+height) return this.isBlocked = true; 
         }
-        else if (this.momentum == "down") {
+        else if (this.momentum == 'down') {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis >= y-32 && this.yAxis <= y+height-1) return this.isBlocked = true; 
         }
-        else if (this.momentum == "right") {
+        else if (this.momentum == 'right') {
             if (this.xAxis >= x-32 && this.xAxis <= x+width-1 && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
         }
-        else if (this.momentum == "left") {
+        else if (this.momentum == 'left') {
             if (this.xAxis-1 >= x-32 && this.xAxis <= x+width && this.yAxis > y-32 && this.yAxis < y+height) return this.isBlocked = true; 
         }
         return this.isBlocked = false
     }
     detection(x, y, width, height) {
-        if (this.direction == "up") {
+        if (this.direction == 'up') {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis-1 >= y-32 && this.yAxis <= y+height) 
             return this.isDetected = true;
         }
-        else if (this.direction == "down") {
+        else if (this.direction == 'down') {
             if (this.xAxis > x-32 && this.xAxis < x+width && this.yAxis >= y-32 && this.yAxis <= y+height-1) 
             return this.isDetected = true; 
         }
-        else if (this.direction == "right") {
+        else if (this.direction == 'right') {
             if (this.xAxis >= x-32 && this.xAxis <= x+width-1 && this.yAxis > y-32 && this.yAxis < y+height)  return this.isDetected = true; 
         }
-        else if (this.direction == "left") {
+        else if (this.direction == 'left') {
             if (this.xAxis-1 >= x-32 && this.xAxis <= x+width && this.yAxis > y-32 && this.yAxis < y+height) return this.isDetected = true; 
         }
         return this.isDetected = false
@@ -230,7 +230,8 @@ class Sprite {
         
     }
     ghostAI() {
-        if (this.momentum === null) this.momentum = 'right';
+        // if (this.momentum === null) this.momentum = 'right';
+        if (this.direction === 'neutral') this.direction = 'up';
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.obstacle(...this.ghostObstacle[i]) === true) break;
         }
@@ -248,11 +249,11 @@ class Sprite {
         }, 60)
         }
 };
-const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
-const redGhost = new Sprite("red", 1, 1, 2, 8, 248, 200, "neutral") //this is all I need for a functioning red ghost
-const pinkGhost = new Sprite("pink", 2, 1, 2, 8, 230, 255, "neutral")
-const blueGhost = new Sprite("blue", 3, 1, 2, 8, 265, 255, "neutral")
-const brownGhost = new Sprite("brown", 4, 1, 2, 8, 300, 255, "neutral")
+const pacman = new Sprite('pacman', 0, 1, 2, 8, 248, 520, 'neutral'); //establishing the onscreen characters 
+const redGhost = new Sprite('red', 1, 1, 2, 8, 248, 200, 'neutral') //this is all I need for a functioning red ghost
+const pinkGhost = new Sprite('pink', 2, 1, 2, 8, 230, 255, 'neutral')
+const blueGhost = new Sprite('blue', 3, 1, 2, 8, 265, 255, 'neutral')
+const brownGhost = new Sprite('brown', 4, 1, 2, 8, 300, 255, 'neutral')
 let totalPoints = 0;
 
 document.addEventListener('keydown', (direction) => { //this function detects arrow pushes for pacman's movement
