@@ -5,6 +5,7 @@ const countdownImg1 = new Image();
 const countdownImg2 = new Image();
 const countdownImg3 = new Image();
 const startImg = new Image();
+const gameOverImg = new Image();
 const gameAreaSetup = document.getElementById('GameArea');
 const game = gameAreaSetup.getContext('2d');
 const ghostSetup = document.getElementById('ghosts');
@@ -34,6 +35,8 @@ class Sprite {
     placeholder;
     isBlocked = false; //checks if the user is blocked or not
     isDetected = false;
+    dead = false;
+    lifeLost = false;
     obstacleArray = [
         [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238],//these are the 6 boundaries
         [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], [360, 584, 32, 72], [-32, 232, 104, 80], [-32, 344, 104, 80], [456, 232, 104, 80], [456, 344, 104, 80], //these are the 10 boundary bulges
@@ -88,6 +91,9 @@ class Sprite {
         this.momentum = this.direction
         if (this.isDetected === true) this.momentum = this.placeholder;
         this.move();
+        lostLife();
+        if (pacman.dead === true) return;
+        if (pacman.lifeLost === true) return newLife();
         setTimeout(() => {
             this.pacmanConnect();
         }, 60);
@@ -153,7 +159,7 @@ class Sprite {
 
             this.spriteNum--;
         } else if (this.isBlocked == false) {
-            if (this.name == 'pacman') {
+            if (this.name === 'pacman') {
                 game.drawImage(sprites, 0, 0, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 2
             }
@@ -162,7 +168,7 @@ class Sprite {
                 this.spriteNum = 1;
             }
         } else if (this.isBlocked == true) {
-            if (this.name == 'pacman') {
+            if (this.name === 'pacman') {
                 game.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             } else {
                 ghostZone.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
@@ -170,26 +176,40 @@ class Sprite {
         } 
     }
     ghostChoice() {
+        let headsOrTails = Math.floor(Math.random() * 2)
+        let lookAround = Math.floor(Math.random() * 12)
         let decision = Math.floor(Math.random() * 12)
         if (decision <= 2) return this.momentum = 'up'
         else if (decision <= 5) return this.momentum = 'right'
         else if (decision <= 8) return this.momentum = 'left'
         else if (decision <= 11) return this.momentum = 'down'
+        if (lookAround <= 2) return this.direction = 'up'
+        else if (lookAround <= 5) return this.direction = 'right'
+        else if (lookAround <= 8) return this.direction = 'left'
+        else if (lookAround <= 11) return this.direction = 'down'
     }
     ghostAI() {
         if (this.momentum === null) this.ghostChoice();
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.obstacle(...this.obstacleArray[i]) === true) break;
         }
+        for (let i = 0; i < this.obstacleArray.length; i++) {
+            if (this.detection(...this.obstacleArray[i]) === true) break;
+        }
+        // if (this.isDetected === false) this.ghostChoice();
         if (this.isBlocked === true) this.ghostChoice();
         this.move(); 
+        
+        lostLife();
+        if (pacman.dead === true) return;
+        if (pacman.lifeLost === true) return;
         setTimeout(() => {
             this.ghostAI();
         }, 60)
         }
 };
-const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
-const redGhost = new Sprite("red", 1, 1, 2, 8, 248, 200, "neutral") //this is all I need for a functioning red ghost
+const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral", 14); //establishing the onscreen characters 
+const redGhost = new Sprite("red", 1, 1, 2, 8, 248, 200, "neutral", 14) //this is all I need for a functioning red ghost
 const pinkGhost = new Sprite("pink", 2, 1, 2, 8, 230, 255, "neutral")
 const blueGhost = new Sprite("blue", 3, 1, 2, 8, 265, 255, "neutral")
 const brownGhost = new Sprite("brown", 4, 1, 2, 8, 300, 255, "neutral")
@@ -208,13 +228,58 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
             pacman.direction = 'right'
         }
 });
-function death() {
+let pacmanLives = 3;
+function lostLife() {
+    setTimeout(16)
+    if (pacman.xAxis === redGhost.xAxis && pacman.yAxis === redGhost.yAxis) {
+    pacmanLives -= 1;
+    ghostZone.clearRect(216+(32*(pacmanLives)), 16, 32, 32)
+    return pacman.lifeLost = true;
+    }
+    if (pacmanLives <= 0) {
+    countdown.drawImage(gameOverImg, 0, 0)
+    pacman.dead = true;
+    }
+}
+function newLife() {
+    setTimeout(() => {
+    game.clearRect(pacman.xAxis, pacman.yAxis, 32, 32)
+    pacman.xAxis = 248;
+    pacman.yAxis = 520;
+    ghostZone.clearRect(redGhost.xAxis, redGhost.yAxis, 32, 32)
+    redGhost.xAxis = 248;
+    redGhost.yAxis = 200;
+    pacman.lifeLost = false;
+    game.drawImage(sprites, 0, 0, 32, 32, pacman.xAxis, pacman.yAxis, 32, 32)
+    ghostZone.drawImage(sprites, 0, 32, 32, 32, redGhost.xAxis, redGhost.yAxis, 32, 32)
+    ghostZone.drawImage(sprites, 0, 64, 32, 32, pinkGhost.xAxis, pinkGhost.yAxis, 32, 32)
+    ghostZone.drawImage(sprites, 0, 96, 32, 32, blueGhost.xAxis, blueGhost.yAxis, 32, 32)
+    ghostZone.drawImage(sprites, 0, 128, 32, 32, brownGhost.xAxis, brownGhost.yAxis, 32, 32)  
+    countdown.drawImage(countdownImg3, 0, 0)
+    }, 3000)
+    setTimeout(() => {
+        countdown.clearRect(0,0,800, 800)
+        countdown.drawImage(countdownImg2, 0, 0)
+    }, 4000)
+    setTimeout(() => {
+        countdown.clearRect(0,0,800, 800)
+        countdown.drawImage(countdownImg1, 0, 0)
+    }, 5000)
+    setTimeout(() => {
+        countdown.clearRect(0,0,800, 800)
+        countdown.drawImage(startImg, 0, 0)
+    }, 6000)
+    setTimeout(() => {
+        countdown.clearRect(0,0,800, 800)
+        pacman.pacmanConnect();
+        redGhost.ghostAI();
+    }, 7000)
 }
 
 
 
 
-gameImg.onload = function() {
+gameImg.onload = function() { //sets up all of the assets on website load, some are on timers.
     background.drawImage(backgroundImg, 0, 0)
     game.drawImage(gameImg, 0, 0)
     setTimeout(() => {
@@ -224,14 +289,17 @@ gameImg.onload = function() {
         ghostZone.drawImage(sprites, 0, 96, 32, 32, blueGhost.xAxis, blueGhost.yAxis, 32, 32)
         ghostZone.drawImage(sprites, 0, 128, 32, 32, brownGhost.xAxis, brownGhost.yAxis, 32, 32)  
         countdown.drawImage(countdownImg3, 0, 0)
+        ghostZone.drawImage(sprites, 32, 0, 32, 32, 216, 16, 32, 32)
     }, 1000);
     setTimeout(() => {
         countdown.clearRect(0,0,800, 800)
         countdown.drawImage(countdownImg2, 0, 0)
+        ghostZone.drawImage(sprites, 32, 0, 32, 32, 248, 16, 32, 32)
     }, 2000);
     setTimeout(() => {
         countdown.clearRect(0,0,800, 800)
         countdown.drawImage(countdownImg1, 0, 0)
+        ghostZone.drawImage(sprites, 32, 0, 32, 32, 280, 16, 32, 32)
     }, 3000);
     setTimeout(() => {
         countdown.clearRect(0,0,800, 800)
@@ -244,10 +312,11 @@ gameImg.onload = function() {
     }, 5000);
 }
 
-countdownImg1.src = 'images/countdown1.png'
-countdownImg2.src = 'images/countdown2.png'
-countdownImg3.src = 'images/countdown3.png'
-startImg.src = 'images/start.png'
+countdownImg1.src = 'images/countdown1.png';
+countdownImg2.src = 'images/countdown2.png';
+countdownImg3.src = 'images/countdown3.png';
+startImg.src = 'images/start.png';
 sprites.src = 'images/Pacman.png';
 backgroundImg.src = 'images/background.png';
 gameImg.src = 'images/points.png';
+gameOverImg.src = 'images/GameOver.png';
