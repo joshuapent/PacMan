@@ -34,7 +34,7 @@ class Sprite {
     isDetected = false;
     obstacleArray = [
         [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238],//these are the 6 boundaries
-        [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], [360, 584, 32, 72], [0, 232, 72, 80], [0, 344, 72, 80], [456, 232, 72, 80], [456, 344, 72, 80], //these are the 10 boundary bulges
+        [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], [360, 584, 32, 72], [-32, 232, 104, 80], [-32, 344, 104, 80], [456, 232, 104, 80], [456, 344, 104, 80], //these are the 10 boundary bulges
         [40, 568, 64, 48], [40, 40, 64, 48], [424, 40, 64, 48], [424, 568, 64, 48],  //4 corner boxes 
         [40, 456, 64, 80], [424, 456, 64, 80], [424, 120, 64, 80], [40, 120, 64, 80], //4 next to corner boxes
         [136, 104, 32, 32], [360, 104, 32, 32], [136, 520, 32, 32], [360, 520, 32, 32], //4 mini boxes
@@ -75,13 +75,13 @@ class Sprite {
         return this.isDetected = false
     }
     animate() { //makes the sprite animated, ex: Pacman moves his mouth.
+        if (this.momentum === null) this.momentum = this.direction
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.obstacle(...this.obstacleArray[i]) === true) break;
         }
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.detection(...this.obstacleArray[i]) === true) break;
         }
-        if (this.momentum === null) this.momentum = this.direction
         this.placeholder = this.momentum;
         this.momentum = this.direction
         if (this.isDetected === true) this.momentum = this.placeholder
@@ -130,11 +130,11 @@ class Sprite {
             }
         } else if (this.isBlocked == true) {
                 game.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
-        } setTimeout(() => {
- 
-            this.animate();
-        }, 50);
-    }
+        } 
+    setTimeout(() => {
+        this.animate();
+    }, 60);
+}
 };
 const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
 const redGhost = new Sprite("red", 1, 1, 2, 8, 195, 255, "neutral") //this is all I need for a functioning red ghost
@@ -165,7 +165,6 @@ function death() {
 gameImg.onload = function() {
     background.drawImage(backgroundImg, 0, 0)
     game.drawImage(gameImg, 0, 0)
-
     setTimeout(() => {
         game.drawImage(sprites, 0, 0, 32, 32, pacman.xAxis, pacman.yAxis, 32, 32)
         ghostZone.drawImage(sprites, 0, 32, 32, 32, redGhost.xAxis, redGhost.yAxis, 32, 32)
@@ -188,7 +187,7 @@ gameImg.onload = function() {
     }, 4000);
     setTimeout(() => {
         countdown.clearRect(0,0,800, 800)
-        pacman.animate();  
+        pacman.animate();
     }, 5000);
 }
 
