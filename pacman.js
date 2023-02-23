@@ -9,6 +9,8 @@ const gameAreaSetup = document.getElementById('GameArea');
 const game = gameAreaSetup.getContext('2d');
 const ghostSetup = document.getElementById('ghosts');
 const ghostZone = ghostSetup.getContext('2d');
+const ghostEraseSetup = document.getElementById('ghosterase');
+const ghostErase = ghostEraseSetup.getContext('2d');
 const backgroundSetup = document.getElementById('background');
 const background = backgroundSetup.getContext('2d');
 const countdownSetup = document.getElementById('start');
@@ -94,39 +96,61 @@ class Sprite {
         if (this.momentum === 'up') {
             if (this.isBlocked == false) {
             this.directionI = this.column+3;
-                this.yAxis -= this.movement;
+            this.yAxis -= this.movement;
+            if (this.name === 'pacman') {
                 game.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
-                game.clearRect(this.xAxis+2,this.yAxis+2,28,28)
+            } else {
+                ghostZone.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
+            }
             }
         }
         if (this.momentum === 'down') {
             if (this.isBlocked === false) {
             this.directionI = this.column+5;
-                this.yAxis += this.movement; //using .movement allows game speed to be changed easily
+            this.yAxis += this.movement; //using .movement allows game speed to be changed easily
+            if (this.name === 'pacman') {
                 game.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
+            } else {
+                ghostZone.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
+
+            }
             }
         }
         else if (this.momentum === 'left') {
             if (this.isBlocked === false) {
             this.directionI = this.column+1;
             this.xAxis -= this.movement; 
-            if (pacman.xAxis <= -32) pacman.xAxis = 528 // this allows for teleporting
-            game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
+            if (this.name === 'pacman') {
+                game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
+                if (pacman.xAxis <= -32) pacman.xAxis = 528 // this allows for teleporting
+            } else {
+                ghostZone.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
+            }
             }
         }
         else if (this.momentum === 'right') {
             if (this.isBlocked === false) {
             this.directionI = this.column-1;
             this.xAxis += this.movement;
-            if (pacman.xAxis >= 528) pacman.xAxis = -32 // this allows for teleporting
-            game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
+            if (this.name === 'pacman') {
+                game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
+                if (pacman.xAxis >= 528) pacman.xAxis = -32 // this allows for teleporting
+            } else {
+                ghostZone.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
+
+            }
             }
         };
         this.animate();
     }
     animate() {
         if(this.column < this.column + this.spriteNum && this.isBlocked == false) {
-            game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            if (this.name === 'pacman') {
+                game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            } else {
+                ghostZone.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            }
+
             this.spriteNum--;
         } else if (this.isBlocked == false) {
             if (this.name == 'pacman') {
@@ -134,26 +158,31 @@ class Sprite {
                 this.spriteNum = 2
             }
             else {
-                game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+                ghostZone.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 1;
             }
         } else if (this.isBlocked == true) {
+            if (this.name == 'pacman') {
                 game.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            } else {
+                ghostZone.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            }
         } 
     }
     ghostChoice() {
         let decision = Math.floor(Math.random() * 12)
-        if (decision < 3) this.direction = 'up'
-        if (decision < 6) this.direction === 'right'
-        else if (decision < 9) this.direction === 'left'
-        else if (decision < 12) this.direction === 'down'
+        if (decision <= 2) return this.momentum = 'up'
+        else if (decision <= 5) return this.momentum = 'right'
+        else if (decision <= 8) return this.momentum = 'left'
+        else if (decision <= 11) return this.momentum = 'down'
     }
     ghostAI() {
+        if (this.momentum === null) this.ghostChoice();
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.obstacle(...this.obstacleArray[i]) === true) break;
         }
-        this.animate();
-        if (this.isBlocked === true) this.ghostChoice()
+        if (this.isBlocked === true) this.ghostChoice();
+        this.move(); 
         setTimeout(() => {
             this.ghostAI();
         }, 60)
