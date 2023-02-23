@@ -17,7 +17,7 @@ const background = backgroundSetup.getContext('2d');
 const countdownSetup = document.getElementById('start');
 const countdown = countdownSetup.getContext('2d');
 class Sprite {
-    constructor(name, row, column, spriteNum, movement, xAxis, yAxis, direction, radius) {
+    constructor(name, row, column, spriteNum, movement, xAxis, yAxis, direction) {
         this.name = name; //helps for if/else statements
         this.row = row; // this is for sprite location
         this.column = column; //this is for sprite location
@@ -25,7 +25,6 @@ class Sprite {
         this.movement = movement; // speed of movement
         this.xAxis = xAxis; //marks current location
         this.yAxis = yAxis; 
-        this.radius = radius; // this is for hitboxes
         this.direction = direction; //which way are they going
     }
     dim = 32; // dim = dimensions
@@ -102,7 +101,6 @@ class Sprite {
         }
         this.move();
         this.points();
-        lostLife();
         if (pacman.dead === true) return;
         if (pacman.lifeLost === true) return newLife();
         setTimeout(() => {
@@ -201,6 +199,17 @@ class Sprite {
             }
         } 
     }
+    lostlife() {
+        if (pacman.xAxis + pacman.dim > this.xAxis && pacman.xAxis < this.xAxis + this.dim && pacman.yAxis + pacman.dim > this.yAxis && pacman.yAxis < this.yAxis + this.dim) {
+            pacmanLives -= 1;
+            ghostZone.clearRect(216+(32*(pacmanLives)), 16, 32, 32)
+            if (pacmanLives > 0) return pacman.lifeLost = true;
+            }
+            if (pacmanLives <= 0) {
+            countdown.drawImage(gameOverImg, 0, 0)
+            return pacman.dead = true;
+            } return;
+    }
     ghostChoice() {
         this.placeholder = this.direction;
         let headsOrTails = Math.floor(Math.random() * 2)
@@ -231,6 +240,7 @@ class Sprite {
         // if (this.isDetected === false) this.ghostChoice();
         this.move(); 
         this.ghostChoice();
+        this.lostlife();
         if (pacman.dead === true) return;
         if (pacman.lifeLost === true) return;
         setTimeout(() => {
@@ -238,8 +248,8 @@ class Sprite {
         }, 60)
         }
 };
-const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral", 14); //establishing the onscreen characters 
-const redGhost = new Sprite("red", 1, 1, 2, 8, 248, 200, "neutral", 14) //this is all I need for a functioning red ghost
+const pacman = new Sprite("pacman", 0, 1, 2, 8, 248, 520, "neutral"); //establishing the onscreen characters 
+const redGhost = new Sprite("red", 1, 1, 2, 8, 248, 200, "neutral") //this is all I need for a functioning red ghost
 const pinkGhost = new Sprite("pink", 2, 1, 2, 8, 230, 255, "neutral")
 const blueGhost = new Sprite("blue", 3, 1, 2, 8, 265, 255, "neutral")
 const brownGhost = new Sprite("brown", 4, 1, 2, 8, 300, 255, "neutral")
@@ -260,18 +270,18 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
         }
 });
 let pacmanLives = 3;
-function lostLife() {
-    setTimeout(16)
-    if (pacman.xAxis + pacman.dim > redGhost.xAxis && pacman.xAxis < redGhost.xAxis +redGhost.dim && pacman.yAxis + pacman.dim > redGhost.yAxis && pacman.yAxis < redGhost.yAxis + redGhost.dim) {
-    pacmanLives -= 1;
-    ghostZone.clearRect(216+(32*(pacmanLives)), 16, 32, 32)
-    if (pacmanLives > 0) return pacman.lifeLost = true;
-    }
-    if (pacmanLives <= 0) {
-    countdown.drawImage(gameOverImg, 0, 0)
-    return pacman.dead = true;
-    } return;
-}
+// function lostLife() {
+//     setTimeout(16)
+//     if (pacman.xAxis + pacman.dim > redGhost.xAxis && pacman.xAxis < redGhost.xAxis +redGhost.dim && pacman.yAxis + pacman.dim > redGhost.yAxis && pacman.yAxis < redGhost.yAxis + redGhost.dim) {
+//     pacmanLives -= 1;
+//     ghostZone.clearRect(216+(32*(pacmanLives)), 16, 32, 32)
+//     if (pacmanLives > 0) return pacman.lifeLost = true;
+//     }
+//     if (pacmanLives <= 0) {
+//     countdown.drawImage(gameOverImg, 0, 0)
+//     return pacman.dead = true;
+//     } return;
+// }
 function newLife() {
     if (pacman.dead === true) return;
     setTimeout(() => {
