@@ -37,6 +37,7 @@ class Sprite {
     isDetected = false;
     dead = false;
     lifeLost = false;
+    visited = [];
     obstacleArray = [
         [0, 648, 528, 8], [0, 0, 528, 8], [0, 0, 8, 238], [0, 418, 8, 238], [520, 418, 8, 238], [520, 0, 8, 238], //these are the 6 boundaries
         [200, 552, 128, 104], [200, 0, 128, 104], [136, 0, 32, 72], [360, 0, 32, 72], [136, 584, 32, 72], [360, 584, 32, 72], [-32, 232, 104, 80], [-32, 344, 104, 80], [456, 232, 104, 80], [456, 344, 104, 80], //these are the 10 boundary bulges
@@ -100,12 +101,24 @@ class Sprite {
             if (this.detection(...this.obstacleArray[i]) === true) break;
         }
         this.move();
+        this.points();
         lostLife();
         if (pacman.dead === true) return;
         if (pacman.lifeLost === true) return newLife();
         setTimeout(() => {
             this.pacmanConnect();
         }, 60);
+    }
+    points() {
+        for (let i = 0; i < this.visited.length; i++) {
+                if (this.visited[i] !== this.xAxis) {
+                    this.visited.push(this.xAxis)
+                    totalPoints += 1;
+                    console.log(this.visited)
+                    console.log(totalPoints)
+                    return;
+            }
+        } return;
     }
     move() {
         if (this.momentum === null) this.momentum = this.direction
@@ -208,7 +221,7 @@ class Sprite {
         
     }
     ghostAI() {
-        if (this.momentum === null) this.ghostChoice();
+        if (this.momentum === null) this.momentum = 'right';
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.obstacle(...this.ghostObstacle[i]) === true) break;
         }
@@ -218,8 +231,6 @@ class Sprite {
         // if (this.isDetected === false) this.ghostChoice();
         this.move(); 
         this.ghostChoice();
-
-        lostLife();
         if (pacman.dead === true) return;
         if (pacman.lifeLost === true) return;
         setTimeout(() => {
@@ -232,6 +243,7 @@ const redGhost = new Sprite("red", 1, 1, 2, 8, 248, 200, "neutral", 14) //this i
 const pinkGhost = new Sprite("pink", 2, 1, 2, 8, 230, 255, "neutral")
 const blueGhost = new Sprite("blue", 3, 1, 2, 8, 265, 255, "neutral")
 const brownGhost = new Sprite("brown", 4, 1, 2, 8, 300, 255, "neutral")
+let totalPoints = 0;
 
 document.addEventListener('keydown', (direction) => { //this function detects arrow pushes for pacman's movement
     if (direction.code == 'KeyW' || direction.code == 'ArrowUp') {
@@ -250,17 +262,18 @@ document.addEventListener('keydown', (direction) => { //this function detects ar
 let pacmanLives = 3;
 function lostLife() {
     setTimeout(16)
-    if (pacman.xAxis === redGhost.xAxis && pacman.yAxis === redGhost.yAxis) {
+    if (pacman.xAxis + pacman.dim > redGhost.xAxis && pacman.xAxis < redGhost.xAxis +redGhost.dim && pacman.yAxis + pacman.dim > redGhost.yAxis && pacman.yAxis < redGhost.yAxis + redGhost.dim) {
     pacmanLives -= 1;
     ghostZone.clearRect(216+(32*(pacmanLives)), 16, 32, 32)
-    return pacman.lifeLost = true;
+    if (pacmanLives > 0) return pacman.lifeLost = true;
     }
     if (pacmanLives <= 0) {
     countdown.drawImage(gameOverImg, 0, 0)
-    pacman.dead = true;
-    }
+    return pacman.dead = true;
+    } return;
 }
 function newLife() {
+    if (pacman.dead === true) return;
     setTimeout(() => {
     game.clearRect(pacman.xAxis, pacman.yAxis, 32, 32)
     pacman.xAxis = 248;
