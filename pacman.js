@@ -6,6 +6,7 @@ const countdownImg2 = new Image();
 const countdownImg3 = new Image();
 const startImg = new Image();
 const gameOverImg = new Image();
+const totalPointsId = document.getElementById('totalPoints')
 const gameAreaSetup = document.getElementById('GameArea');
 const game = gameAreaSetup.getContext('2d');
 const ghostSetup = document.getElementById('ghosts');
@@ -98,6 +99,7 @@ class Sprite {
         return this.isDetected = false
     }
     pacmanConnect() { 
+        totalPointsId.innerHTML = totalPoints;
         for (let i = 0; i < this.obstacleArray.length; i++) {
             if (this.obstacle(...this.obstacleArray[i]) === true) break;
         }
@@ -106,6 +108,7 @@ class Sprite {
         }
         this.move();
         this.points();
+
         if (pacman.dead === true) return;
         if (pacman.lifeLost === true) return newLife();
         setTimeout(() => {
@@ -118,11 +121,11 @@ class Sprite {
                 if (this.pointLocation[i] === [0, 0]) return;
                 else {
                     this.pointLocation[i] = [0, 0];
+                    game.clearRect[this.pointLocation[i][0], this.pointLocation[i][1], 2, 2]
                     return totalPoints += 10;
                 }
             }
         }
-        console.log(totalPoints)
     };
     move() {
         if (this.momentum === null) this.momentum = this.direction
@@ -268,7 +271,7 @@ const pinkGhost = new Sprite('pink', 2, 1, 2, 8, 230, 255, 'neutral')
 const blueGhost = new Sprite('blue', 3, 1, 2, 8, 265, 255, 'neutral')
 const brownGhost = new Sprite('brown', 4, 1, 2, 8, 300, 255, 'neutral')
 let totalPoints = 0;
-
+let hasWon = false;
 document.addEventListener('keydown', (direction) => { //this function detects arrow pushes for pacman's movement
     if (direction.code == 'KeyW' || direction.code == 'ArrowUp') {
             pacman.direction = 'up'
