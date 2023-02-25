@@ -68,8 +68,8 @@ class Sprite {
         [136, 104, 32, 32], [360, 104, 32, 32], [136, 520, 32, 32], [360, 520, 32, 32], //4 mini boxes
         [136, 456, 80, 64],  [312, 456, 80, 64], [280, 136, 112, 64], [136, 136, 112, 64], //attached to mini boxes
         [248, 456, 32, 64], [104, 344, 144, 80], [280, 344, 144, 80], //these are the other 3 bottom boxes
-        [104, 232, 48, 80], [376 ,232, 48, 80], [184, 232, 160, 80],// these are the other 3 top boxes
-        [184, 232, 64, 2], [280, 232, 64, 2], [184, 232, 32, 80], [312, 232, 64, 32], [184, 310, 160, 2],//ghost box
+        [104, 232, 48, 80], [376 ,232, 48, 80], // these are the other 3 top boxes
+        [184, 232, 64, 2], [280, 232, 64, 2], [184, 232, 32, 80], [312, 232, 32, 80], [184, 310, 160, 2],//ghost box
         [248, 232, 32, 2]//ghost box special case
     ];
     obstacle(x, y, width, height) {
@@ -139,6 +139,7 @@ class Sprite {
         for (let i = 0; i < this.powerOrbLocation.length; i++) {
             if (this.powerOrbLocation[i][0] < pacman.xAxis + 27 && this.powerOrbLocation[i][0] > pacman.xAxis +5 && this.powerOrbLocation[i][1] < pacman.yAxis + 27 && this.powerOrbLocation[i][1] > pacman.yAxis +5) {
                 pointZone.clearRect(this.powerOrbLocation[i][0], this.powerOrbLocation[i][1], 10, 10)
+                this.powerOrbLocation[i] = [0, 0];
                 this.powerOrbActive = true;
                 setTimeout(() => {
                     this.powerOrbActive = false;
@@ -147,13 +148,18 @@ class Sprite {
         }
     }
     move() {
+        if (this.dead === true && this.xAxis === 248 && this.yAxis >= 200 && this.yAxis < 240) {
+            ghostZone.clearRect(this.xAxis,this.yAxis+this.movement,30,30)
+            this.yAxis += 8; 
+        }
         if (this.momentum === null) this.momentum = this.direction
         this.placeholder = this.momentum;
         this.momentum = this.direction
         if (this.isDetected === true) this.momentum = this.placeholder;
         if (this.momentum === 'up') {
             if (this.isBlocked == false) {
-            this.directionI = this.column+3;
+                if (this.dead === false) this.directionI = this.column+3;
+                else if (this.dead === true) this.directionI = 2;
             this.yAxis -= this.movement;
             if (this.name === 'pacman') {
                 game.clearRect(this.xAxis+2,this.yAxis+this.movement,28,30)
@@ -164,7 +170,8 @@ class Sprite {
         }
         if (this.momentum === 'down') {
             if (this.isBlocked === false) {
-            this.directionI = this.column+5;
+                if (this.dead === false) this.directionI = this.column+5;
+                else if (this.dead === true) this.directionI = 3
             this.yAxis += this.movement; //using .movement allows game speed to be changed easily
             if (this.name === 'pacman') {
                 game.clearRect(this.xAxis+2,this.yAxis-this.movement,28,30)
@@ -176,7 +183,8 @@ class Sprite {
         }
         else if (this.momentum === 'left') {
             if (this.isBlocked === false) {
-            this.directionI = this.column+1;
+                if (this.dead === false) this.directionI = this.column+1;
+                else if (this.dead === true) this.directionI = 1;
             this.xAxis -= this.movement; 
             if (this.name === 'pacman') {
                 game.clearRect(this.xAxis+this.movement,this.yAxis+2,30,28)
@@ -188,15 +196,16 @@ class Sprite {
         }
         else if (this.momentum === 'right') {
             if (this.isBlocked === false) {
-            this.directionI = this.column-1;
-            this.xAxis += this.movement;
-            if (this.name === 'pacman') {
-                game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
-                if (pacman.xAxis >= 528) pacman.xAxis = -32 // this allows for teleporting
-            } else {
-                ghostZone.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
+                if (this.dead === false) this.directionI = this.column-1;
+                else if (this.dead === true) this.directionI = 0 
+                this.xAxis += this.movement;
+                if (this.name === 'pacman') {
+                    game.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
+                    if (pacman.xAxis >= 528) pacman.xAxis = -32 // this allows for teleporting
+                } else {
+                    ghostZone.clearRect(this.xAxis-this.movement,this.yAxis+2,30,28)
 
-            }
+                }
             }
         };
         this.animate();
@@ -205,8 +214,8 @@ class Sprite {
         if(this.column < this.column + this.spriteNum && this.isBlocked == false) {
             if (this.name === 'pacman') {
                 game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
-            // } else if (this.dead = true) {
-            //     ghostZone.drawImage(sprites, (this.spriteNum+(this.directionI/2)) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            } else if (this.dead === true) {
+                ghostZone.drawImage(sprites, (4 + this.directionI) * this.dim, 5 * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             } else if (pacman.powerOrbActive === true) {
                 ghostZone.drawImage(sprites, 32, 5*32, 32, 32, this.xAxis, this.yAxis, 32, 32)
             } else {
@@ -217,6 +226,8 @@ class Sprite {
             if (this.name === 'pacman') {
                 game.drawImage(sprites, 0, 0, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 2
+            } else if (this.dead === true) {
+                ghostZone.drawImage(sprites, (4 + this.directionI) * this.dim, 5 * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             } else if (pacman.powerOrbActive === true) {
                 ghostZone.drawImage(sprites, 1, 5*32, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 1;
@@ -227,6 +238,8 @@ class Sprite {
         } else if (this.isBlocked == true) {
             if (this.name === 'pacman') {
                 game.drawImage(sprites, (this.column+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
+            } else if (this.dead === true) {
+                //no functionality needed
             } else if (pacman.powerOrbActive === true) {
                 ghostZone.drawImage(sprites, 1, 5*32, 32, 32, this.xAxis, this.yAxis, 32, 32)
             } else {
@@ -236,14 +249,37 @@ class Sprite {
     }
     lostlife() {
         if (pacman.xAxis + pacman.dim > this.xAxis && pacman.xAxis < this.xAxis + this.dim && pacman.yAxis + pacman.dim > this.yAxis && pacman.yAxis < this.yAxis + this.dim) {
-            pacmanLives -= 1;
-            ghostZone.clearRect(216+(32*(pacmanLives)), 16, 32, 32)
-            if (pacmanLives > 0) return pacman.lifeLost = true;
+            if (pacman.powerOrbActive === false) {
+                pacmanLives -= 1;
+                ghostZone.clearRect(216+(32*(pacmanLives)), 16, 32, 32)
+                if (pacmanLives > 0) return pacman.lifeLost = true;
+                if (pacmanLives <= 0) {
+                countdown.drawImage(gameOverImg, 0, 0)
+                return pacman.dead = true;
+                } return;
             }
-            if (pacmanLives <= 0) {
-            countdown.drawImage(gameOverImg, 0, 0)
-            return pacman.dead = true;
-            } return;
+            else if (pacman.powerOrbActive === true) {
+                console.log("ghost died")
+                return this.dead = true;
+            }
+        }
+    }
+    goHome() { //x: 248, y:200
+        if (this.xAxis === 248 && this.yAxis === 248) {
+            console.log('hey')
+        } else if (this.isBlocked === true) { 
+            return this.ghostChoice() 
+        } else if (this.isDetected === false && this.isBlocked === false) {
+            if (this.xAxis > 248) {
+                this.direction = 'left'
+            } else if (this.xAxis < 248) {
+                this.direction = 'right'
+            } else if (this.yAxis > 200) {
+                this.direction = 'up'
+            } else if (this.yAxis < 200) {
+                this.direction = 'down'
+            }
+        }
     }
     ghostChoice() {
         this.placeholder = this.direction;
@@ -277,7 +313,8 @@ class Sprite {
             if (this.detection(...this.ghostObstacle[i]) === true) break;
         }
         this.move(); 
-        this.ghostChoice();
+        if (this.dead === false) this.ghostChoice();
+        if (this.dead === true) this.goHome();
         this.lostlife();
         if (pointsCollected === 325) return 
         if (pacman.dead === true) return;
@@ -289,7 +326,7 @@ class Sprite {
 };
 const pacman = new Sprite('pacman', 0, 1, 2, 8, 248, 520, 'neutral'); //establishing the onscreen characters 
 const redGhost = new Sprite('red', 1, 1, 2, 8, 248, 200, 'neutral') //this is all I need for a functioning red ghost
-const pinkGhost = new Sprite('pink', 2, 1, 2, 8, 230, 255, 'neutral')
+const pinkGhost = new Sprite('pink', 2, 1, 2, 8, 245, 255, 'neutral')
 const blueGhost = new Sprite('blue', 3, 1, 2, 8, 265, 255, 'neutral')
 const brownGhost = new Sprite('brown', 4, 1, 2, 8, 300, 255, 'neutral')
 
@@ -377,6 +414,7 @@ sprites.onload = function() { //sets up all of the assets on website load, some 
         countdown.clearRect(0,0,800, 800)
         pacman.pacmanConnect();
         redGhost.ghostAI();
+        pinkGhost.ghostAI();
     }, 5000);
 }
 
