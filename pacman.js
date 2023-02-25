@@ -35,6 +35,7 @@ class Sprite {
     dim = 32; // dim = dimensions
     directionI = 0; // placeholder for sprite calling.
     momentum = null;
+    restartLife = false;
     placeholder; // u
     isBlocked = false; //checks if the character's movement is blocked or not
     isDetected = false; //checks if the direction is blocked
@@ -150,8 +151,11 @@ class Sprite {
     move() {
         if (this.dead === true && this.xAxis === 248 && this.yAxis >= 200 && this.yAxis < 240) {
             ghostZone.clearRect(this.xAxis,this.yAxis+this.movement,30,30)
-            this.yAxis += 8; 
+            this.animate();
+            this.restartLife = true;
+            return this.yAxis += 8; 
         }
+        if (this.restartLife === true) return;
         if (this.momentum === null) this.momentum = this.direction
         this.placeholder = this.momentum;
         this.momentum = this.direction
@@ -265,9 +269,11 @@ class Sprite {
         }
     }
     goHome() { //x: 248, y:200
-        if (this.xAxis === 248 && this.yAxis === 248) {
-            console.log('hey')
-        } else if (this.isBlocked === true) { 
+        // if (this.restartLife === true) {
+        //     this.dead = false;
+        //     this.yAxis += 8;
+        //     if (this.yAxis >= 200) return this.restartLife = false;
+         if (this.isBlocked === true) { 
             return this.ghostChoice() 
         } else if (this.isDetected === false && this.isBlocked === false) {
             if (this.xAxis > 248) {
