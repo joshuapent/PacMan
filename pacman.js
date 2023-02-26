@@ -149,13 +149,16 @@ class Sprite {
         }
     }
     move() {
-        if (this.dead === true && this.xAxis === 248 && this.yAxis >= 200 && this.yAxis < 240) {
-            ghostZone.clearRect(this.xAxis,this.yAxis+this.movement,30,30)
+        if (this.dead === true && this.restartLife === false && this.xAxis === 248 && this.yAxis >= 200 && this.yAxis < 240) {
+            this.directionI = this.column+5;
+            this.yAxis += 8;
+            ghostZone.clearRect(this.xAxis,this.yAxis-this.movement,30,30)
             this.animate();
-            this.restartLife = true;
-            return this.yAxis += 8; 
+            setTimeout(() => {
+                this.restartLife = true;
+            }, 240);
+            return
         }
-        if (this.restartLife === true) return;
         if (this.momentum === null) this.momentum = this.direction
         this.placeholder = this.momentum;
         this.momentum = this.direction
@@ -220,7 +223,7 @@ class Sprite {
                 game.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
             } else if (this.dead === true) {
                 ghostZone.drawImage(sprites, (4 + this.directionI) * this.dim, 5 * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
-            } else if (pacman.powerOrbActive === true) {
+            } else if (pacman.powerOrbActive === true && this.dead === false) {
                 ghostZone.drawImage(sprites, 32, 5*32, 32, 32, this.xAxis, this.yAxis, 32, 32)
             } else {
                 ghostZone.drawImage(sprites, (this.spriteNum+this.directionI) * this.dim, this.row * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
@@ -232,7 +235,7 @@ class Sprite {
                 this.spriteNum = 2
             } else if (this.dead === true) {
                 ghostZone.drawImage(sprites, (4 + this.directionI) * this.dim, 5 * this.dim, 32, 32, this.xAxis, this.yAxis, 32, 32)
-            } else if (pacman.powerOrbActive === true) {
+            } else if (pacman.powerOrbActive === true && this.dead === false) {
                 ghostZone.drawImage(sprites, 1, 5*32, 32, 32, this.xAxis, this.yAxis, 32, 32)
                 this.spriteNum = 1;
             } else {
@@ -253,7 +256,7 @@ class Sprite {
     }
     lostlife() {
         if (pacman.xAxis + pacman.dim > this.xAxis && pacman.xAxis < this.xAxis + this.dim && pacman.yAxis + pacman.dim > this.yAxis && pacman.yAxis < this.yAxis + this.dim) {
-            if (pacman.powerOrbActive === false) {
+            if (pacman.powerOrbActive === false && this.dead === false) {
                 pacmanLives -= 1;
                 ghostZone.clearRect(216+(32*(pacmanLives)), 16, 32, 32)
                 if (pacmanLives > 0) return pacman.lifeLost = true;
@@ -262,17 +265,26 @@ class Sprite {
                 return pacman.dead = true;
                 } return;
             }
-            else if (pacman.powerOrbActive === true) {
+            else if (pacman.powerOrbActive === true && this.dead === false) {
                 console.log("ghost died")
+                totalPoints += 200;
                 return this.dead = true;
             }
         }
     }
     goHome() { //x: 248, y:200
-        // if (this.restartLife === true) {
-        //     this.dead = false;
-        //     this.yAxis += 8;
-        //     if (this.yAxis >= 200) return this.restartLife = false;
+        if (this.restartLife === true) {
+            // setTimeout(() => {
+                this.directionI = this.column+3;
+                this.yAxis -= 8;
+                ghostZone.clearRect(this.xAxis,this.yAxis+this.movement,30,30)
+                // this.animate();
+            // }, 500);
+            if (this.yAxis <= 200) {
+                this.dead = false;
+            return this.restartLife = false;
+            }
+        }
          if (this.isBlocked === true) { 
             return this.ghostChoice() 
         } else if (this.isDetected === false && this.isBlocked === false) {
@@ -322,7 +334,7 @@ class Sprite {
         if (this.dead === false) this.ghostChoice();
         if (this.dead === true) this.goHome();
         this.lostlife();
-        if (pointsCollected === 325) return 
+        if (pointsCollected === 325) return;
         if (pacman.dead === true) return;
         if (pacman.lifeLost === true) return;
         setTimeout(() => {
@@ -420,7 +432,7 @@ sprites.onload = function() { //sets up all of the assets on website load, some 
         countdown.clearRect(0,0,800, 800)
         pacman.pacmanConnect();
         redGhost.ghostAI();
-        pinkGhost.ghostAI();
+        // pinkGhost.ghostAI();
     }, 5000);
 }
 
