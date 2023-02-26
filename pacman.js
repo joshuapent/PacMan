@@ -313,11 +313,36 @@ class Sprite {
             else if (decision <= 8) return this.momentum = 'left'
             else if (decision <= 11) return this.momentum = 'down'
         }
-        if (this.isDetected === false && this.isBlocked === false) {
-            if (lookAround <= 2) return this.direction = 'up'
-            else if (lookAround <= 5) return this.direction = 'right'
-            else if (lookAround <= 8) return this.direction = 'left'
-            else if (lookAround <= 11) return this.direction = 'down'
+        if (pacman.powerOrbActive === false) {
+            if (this.isDetected === false && this.isBlocked === false) {
+                if (headsOrTails === 0) {
+                    if (lookAround <= 2) return this.direction = 'up'
+                    else if (lookAround <= 5) return this.direction = 'right'
+                    else if (lookAround <= 8) return this.direction = 'left'
+                    else if (lookAround <= 11) return this.direction = 'down'
+                }
+                else if (headsOrTails === 1) {
+                    if (this.xAxis > pacman.xAxis) {
+                        this.direction = 'left'
+                    } else if (this.xAxis < pacman.xAxis) {
+                        this.direction = 'right'
+                    } else if (this.yAxis > pacman.yAxis) {
+                        this.direction = 'up'
+                    } else if (this.yAxis < pacman.yAxis) {
+                        this.direction = 'down'
+                    }
+                }
+            }
+        } else if (pacman.powerOrbActive === true) {
+            if (this.xAxis > pacman.xAxis) {
+                this.direction = 'left'
+            } else if (this.xAxis < pacman.xAxis) {
+                this.direction = 'right'
+            } else if (this.yAxis > pacman.yAxis) {
+                this.direction = 'up'
+            } else if (this.yAxis < pacman.yAxis) {
+                this.direction = 'down'
+            }
         }
         
     }
@@ -370,8 +395,17 @@ function newLife() {
     pacman.xAxis = 248;
     pacman.yAxis = 520;
     ghostZone.clearRect(redGhost.xAxis, redGhost.yAxis, 32, 32)
+    ghostZone.clearRect(brownGhost.xAxis, brownGhost.yAxis, 32, 32)
+    ghostZone.clearRect(pinkGhost.xAxis, pinkGhost.yAxis, 32, 32)
+    ghostZone.clearRect(blueGhost.xAxis, blueGhost.yAxis, 32, 32)
     redGhost.xAxis = 248;
     redGhost.yAxis = 200;
+    pinkGhost.xAxis = 248;
+    pinkGhost.yAxis = 200;
+    blueGhost.xAxis = 248;
+    blueGhost.yAxis = 200;
+    brownGhost.xAxis = 248;
+    brownGhost.yAxis = 200;
     pacman.lifeLost = false;
     game.drawImage(sprites, 0, 0, 32, 32, pacman.xAxis, pacman.yAxis, 32, 32)
     ghostZone.drawImage(sprites, 0, 32, 32, 32, redGhost.xAxis, redGhost.yAxis, 32, 32)
@@ -396,6 +430,9 @@ function newLife() {
         countdown.clearRect(0,0,800, 800)
         pacman.pacmanConnect();
         redGhost.ghostAI();
+        pinkGhost.ghostAI();
+        blueGhost.ghostAI();
+        brownGhost.ghostAI();
     }, 7000)
 }
 
@@ -432,8 +469,19 @@ sprites.onload = function() { //sets up all of the assets on website load, some 
         countdown.clearRect(0,0,800, 800)
         pacman.pacmanConnect();
         redGhost.ghostAI();
-        // pinkGhost.ghostAI();
+        pinkGhost.ghostAI();
+        blueGhost.ghostAI();
+        brownGhost.ghostAI();
     }, 5000);
+    setTimeout(() => {
+        ghostZone.clearRect(184, 232, 160, 80)
+        pinkGhost.xAxis = 248;
+        pinkGhost.yAxis = 200;
+        blueGhost.xAxis = 248;
+        blueGhost.yAxis = 200;
+        brownGhost.xAxis = 248;
+        brownGhost.yAxis = 200;
+    }, 20000);
 }
 
 countdownImg1.src = 'images/countdown1.png';
