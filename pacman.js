@@ -21,6 +21,7 @@ let pointsCollected = 0;
 let totalPoints = 0;
 let hasWon = false;
 let pacmanLives = 3;
+let timesPressed = 1;
 class Sprite {
     constructor(name, row, column, spriteNum, movement, xAxis, yAxis, direction) {
         this.name = name; //helps for if/else statements
@@ -140,11 +141,13 @@ class Sprite {
         for (let i = 0; i < this.powerOrbLocation.length; i++) {
             if (this.powerOrbLocation[i][0] < pacman.xAxis + 27 && this.powerOrbLocation[i][0] > pacman.xAxis +5 && this.powerOrbLocation[i][1] < pacman.yAxis + 27 && this.powerOrbLocation[i][1] > pacman.yAxis +5) {
                 pointZone.clearRect(this.powerOrbLocation[i][0], this.powerOrbLocation[i][1], 10, 10)
+                timesPressed++;
                 this.powerOrbLocation[i] = [0, 0];
                 this.powerOrbActive = true;
                 setTimeout(() => {
                     this.powerOrbActive = false;
-                }, 6000);
+                    timesPressed = 1;
+                }, 6000*timesPressed);
             }
         }
     }
