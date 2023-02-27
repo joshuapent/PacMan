@@ -277,12 +277,9 @@ class Sprite {
     }
     goHome() { //x: 248, y:200
         if (this.restartLife === true) {
-            // setTimeout(() => {
                 this.directionI = this.column+3;
                 this.yAxis -= 8;
                 ghostZone.clearRect(this.xAxis,this.yAxis+this.movement,30,30)
-                // this.animate();
-            // }, 500);
             if (this.yAxis <= 200) {
                 this.dead = false;
             return this.restartLife = false;
@@ -350,7 +347,6 @@ class Sprite {
         
     }
     ghostAI() {
-        // if (this.momentum === null) this.momentum = 'right';
         if (this.direction === 'neutral') this.direction = 'up';
         for (let i = 0; i < this.ghostObstacle.length; i++) {
             if (this.obstacle(...this.ghostObstacle[i]) === true) break;
